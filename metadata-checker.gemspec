@@ -1,11 +1,11 @@
 # coding: utf-8
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'metadata/ocsp/checker/version'
+require 'metadata/checker/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = "metadata-ocsp-checker"
-  spec.version       = Metadata::Ocsp::Checker::VERSION
+  spec.name          = "metadata-checker"
+  spec.version       = Metadata::Checker::VERSION
   spec.authors       = ["Christopher Holmes"]
   spec.email         = ["christopher.holmes@digital.cabinet-office.gov.uk"]
   spec.summary       = %q{A tool for verifying the status of certficates defined in SAML metadata}
