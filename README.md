@@ -1,4 +1,4 @@
-# Metadata::Ocsp::Checker
+# Metadata Checker
 
 TODO: Write a gem description
 
@@ -7,7 +7,7 @@ TODO: Write a gem description
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'metadata-ocsp-checker'
+gem 'metadata-checker'
 ```
 
 And then execute:
@@ -16,7 +16,7 @@ And then execute:
 
 Or install it yourself as:
 
-    $ gem install metadata-ocsp-checker
+    $ gem install metadata-checker
 
 ## Usage
 
