@@ -94,3 +94,5 @@ RSpec.configure do |config|
   Kernel.srand config.seed
 =end
 end
+
+$LOAD_PATH << File.expand_path("../support", __FILE__)
