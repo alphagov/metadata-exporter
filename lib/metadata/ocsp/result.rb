@@ -11,6 +11,10 @@ module Metadata
       def revoked?
         @status == :revoked
       end
+
+      def to_s
+        @status.to_s
+      end
     end
   end
 end
