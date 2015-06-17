@@ -3,16 +3,15 @@ require 'spec_helper'
 require 'pki'
 require 'ocsp_responder'
 require 'metadata/ocsp/checker'
-require 'timecop' 
 describe Metadata::Ocsp::Checker do
   before(:all) do
     @pki = PKI.new
     OCSPResponder.start!(@pki, 4568)
   end
-   before(:each) do
-     OCSPResponder.enable_nonce!
-     Timecop.return
-   end
+
+  before(:each) do
+    OCSPResponder.enable_nonce!
+  end
 
   let(:pki) { @pki }
   let(:checker) {
