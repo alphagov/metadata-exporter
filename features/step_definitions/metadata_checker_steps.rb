@@ -26,7 +26,7 @@ Given(/^the following certificates are defined in metadata:$/) do |table|
     if ent["status"] == "revoked"
       pki.revoke(cert)
     end
-    cert_value = Base64.encode64(cert.to_der)
+    cert_value = pki.inline_pem(cert)
     metadata_entries[ent.fetch("entity_id")] << { :key_name => ent['key_name'], :cert_value => cert_value}
   end
   @metadata = build_metadata(metadata_entries)

@@ -1,6 +1,9 @@
 require 'openssl'
 require 'uri'
+require 'base64'
+require 'certificate_helper'
 class PKI
+  include CertificateHelper
   attr_reader :root_ca, :root_key, :ocsp_host
   def initialize(cn = "TEST CA", ocsp_host = "http://localhost:4568")
     @root_ca = generate_root_certificate(cn)
@@ -49,21 +52,16 @@ class PKI
     cert
   end
 
+  def generate_signed_cert(cn = "SIGNED TEST CERTIFICATE")
+    sign(generate_cert(cn))
+  end
+
   def revoke(certificate)
     @revoked_certificates[certificate.serial.to_i] = { time: Time.now, reason: 0 }
   end
 
   def revocation_data(serial)
     @revoked_certificates[serial.to_i]
-  end
-
-  def generate_cert(cn = "GENERATED TEST CERTIFICATE")
-    key = OpenSSL::PKey::RSA.new 2048
-    cert = OpenSSL::X509::Certificate.new
-    cert.version = 2
-    cert.subject = OpenSSL::X509::Name.parse "/DC=org/DC=TEST/CN=#{cn}"
-    cert.public_key = key.public_key
-    cert
   end
 end
 
