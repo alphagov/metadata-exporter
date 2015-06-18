@@ -1,14 +1,17 @@
 require "r509"
 
 class PKIValidityChecker < R509::Validity::Checker
-  attr_reader :pki
-  def initialize(pki)
-    @pki = pki
+  attr_reader :pkis
+  def initialize(pkis)
+    @pkis = pkis.each.with_object({}) do |pki, pki_hash|
+      subject = pki.root_ca.subject.to_s
+      pki_hash[subject] = pki
+    end
   end
 
   def check(issuer,serial)
     raise ArgumentError.new("Serial and issuer must be provided") if serial.to_s.empty? or issuer.to_s.empty?
-    raise "wrong issuer" if pki.root_ca.subject.to_s != issuer
+    pki = @pkis.fetch(issuer)
     revocation_data = pki.revocation_data(serial)
     if revocation_data
       R509::Validity::Status.new(

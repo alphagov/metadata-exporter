@@ -1,16 +1,22 @@
 Given(/^there is metadata at http:\/\/localhost:(\d+)$/) do |port|
+  raise "@metadata must be set!" if @metadata.nil?
   MetadataServer.new(port, @metadata).start!
 end
 
-Given(/^there is an OCSP responder for (\w+)$/) do |pki_name|
-  pki = PKIS.fetch(pki_name)
-  port = pki.ocsp_host.port
-  OCSPResponder.start!(pki, port)
+Given(/^the OCSP port is (\d+)$/) do |port|
+  @ocsp_port = port
+end
+
+Given(/^there is an OCSP responder$/) do
+  raise "@ocsp_port must be set!" if @ocsp_port.nil?
+  OCSPResponder.start!(PKIS.values, @ocsp_port)
 end
 
 Given(/^there are the following PKIs:$/) do |table|
+  raise "@ocsp_port must be set!" if @ocsp_port.nil?
+  ocsp_host = "http://localhost:#@ocsp_port"
   table.hashes.each do |pki|
-    new_pki = PKI.new(pki["name"], pki["ocsp_host"])
+    new_pki = PKI.new(pki["name"], ocsp_host)
     PKIS[pki["name"]] = new_pki
     write_file(pki["cert_filename"], new_pki.root_ca)
   end

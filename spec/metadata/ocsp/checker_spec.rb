@@ -6,7 +6,7 @@ require 'metadata/ocsp/checker'
 describe Metadata::Ocsp::Checker do
   before(:all) do
     @pki = PKI.new
-    OCSPResponder.start!(@pki, 4568)
+    OCSPResponder.start!([@pki], 4568)
   end
 
   before(:each) do

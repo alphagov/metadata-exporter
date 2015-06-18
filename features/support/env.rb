@@ -16,3 +16,9 @@ Before do
     @metadata_server.shutdown
   end
 end
+
+After do
+  if @metadata_server
+    @metadata_server.shutdown
+  end
+end

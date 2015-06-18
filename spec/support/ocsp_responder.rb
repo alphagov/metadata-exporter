@@ -3,12 +3,12 @@ require 'r509/ocsp/responder/server'
 require 'dependo'
 require 'pki_validity_checker'
 require 'net/http'
-module OCSPResponder
+class OCSPResponder
   SERVER = R509::OCSP::Responder::Server
-  def self.start!(pki, port = 4568)
-    Dependo::Registry[:validity_checker] = PKIValidityChecker.new(pki)
+  def self.start!(pkis, port = 4568)
+    Dependo::Registry[:validity_checker] = PKIValidityChecker.new(pkis)
     SERVER.port = port 
-    load_config(pki)
+    load_config(pkis)
     Thread.new { SERVER.start! }
     wait_until_responder_available!
   end
@@ -24,17 +24,21 @@ module OCSPResponder
     end
   end
 
-  def self.load_config(pki)
-    ca_config_hash = {
-      :ca_cert => 
+  def self.load_config(pkis)
+    ca_configs = pkis.map { |pki| 
+      ca_config_hash = {
+        :ca_cert => 
         R509::Cert.new(:cert => pki.root_ca, :key => R509::PrivateKey.new(:key => pki.root_key)),
-      :ocsp_chain => [pki.root_ca]
+          :ocsp_chain => [pki.root_ca]
+      }
+
+      R509::Config::CAConfig.new(ca_config_hash)
+    }
+    pool = ca_configs.each.with_index.with_object({}) { |(ca_config, index), pool|
+      pool["test_pki_#{index}"] = ca_config 
     }
 
-    ca_config = R509::Config::CAConfig.new(ca_config_hash)
-    Dependo::Registry[:config_pool] = R509::Config::CAConfigPool.new({
-      "test_pki" => ca_config
-    })
+    Dependo::Registry[:config_pool] = R509::Config::CAConfigPool.new(pool)
 
     Dependo::Registry[:copy_nonce] = true
 
