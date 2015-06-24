@@ -68,10 +68,10 @@ module Metadata
         fail CheckerError, "could not verify response against issuer certificates" unless basic_response.verify([], store)
         statuses = basic_response.status
         results = statuses.inject({}) do |hash,status|
-          received_cert_id, revocation_status, revocation_reason, _, this_update, next_update, _ = *status
+          received_cert_id, revocation_status, revocation_reason, _, this_update, _, _ = *status
           cert_ids.each do |cert_id|
             if received_cert_id.cmp(cert_id)
-              @update_time_checker.check_times!(this_update, next_update)
+              @update_time_checker.check_time!(this_update)
               hash[cert_id] = Result.new(
                 REVOCATION_STATUS.fetch(revocation_status),
                 CRLREASON[revocation_reason]
