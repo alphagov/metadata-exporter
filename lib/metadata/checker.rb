@@ -5,14 +5,14 @@ require 'metadata/ocsp/checker'
 require 'metadata/ocsp/certificate_result'
 module Metadata
   module Checker
-    def self.check_ocsp(host, ca_files)
+    def self.check_ocsp(host, ca_files, disable_hostname_verification)
       parser = Metadata::SAML::Parser.new
       metadata_client = Metadata::SAML::Client.new
       ocsp_checker = Metadata::Ocsp::Checker.new
       ca_certs = ca_files.map { |file| OpenSSL::X509::Certificate.new(File.read(file)) }
       issuer_repository = CertificateRepository.new(ca_certs)
 
-      document = metadata_client.get(host)
+      document = metadata_client.get(host, disable_hostname_verification)
       certificate_identities = parser.certificate_identities(document)
       pems = certificate_identities.keys
       ocsp_results = pems.each.with_object({}) do |pem, results|

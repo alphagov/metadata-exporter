@@ -8,10 +8,14 @@ class SensuMetadataOcspCheck < Sensu::Plugin::Check::CLI
   check_name 'metadata_ocsp_check' # defaults to class name
   option :host, :short => '-h HOST', required: true
   option :ca_file_list, :long => '--cas FILES', required: true
+  option :disable_hostname_verification,
+      :short => '--disable-hostname-verification',
+      boolean: true,
+      default: false
 
   def run
     ca_files = config[:ca_file_list].split(",")
-    revocations = Metadata::Checker::check_ocsp(config[:host], ca_files)
+    revocations = Metadata::Checker::check_ocsp(config[:host], ca_files, config[:disable_hostname_verification])
     if revocations.any?
       critical revocations.map(&:message).join("\n")
     else
