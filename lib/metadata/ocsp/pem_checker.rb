@@ -1,11 +1,11 @@
 require 'openssl'
 require 'metadata/certificate/certificate_factory'
 require 'metadata/certificate_repository'
-require 'metadata/ocsp/checker'
+require 'metadata/ocsp/client'
 module Metadata
   module Ocsp
     class PemChecker
-      def initialize(certificate_factory: Certificate::CertificateFactory.new, ocsp_checker: Ocsp::Checker.new)
+      def initialize(certificate_factory: Certificate::CertificateFactory.new, ocsp_checker: Ocsp::Client.new)
         @certificate_factory = certificate_factory
         @ocsp_checker = ocsp_checker
       end
