@@ -37,4 +37,11 @@ Given(/^the following certificates are defined in metadata:$/) do |table|
   end
   @metadata = build_metadata(metadata_entries)
 end
-
+Given(/^the metadata is signed by a (revoked )?certificate belonging to (\w+)$/) do |revoked, pki_name|
+  pki = PKIS.fetch(pki_name)
+  signing_public_certificate, signing_private_key = *pki.generate_signed_cert_and_private_key
+  @metadata = sign_metadata(@metadata, signing_private_key, signing_public_certificate)
+  if revoked
+    pki.revoke(signing_public_certificate)
+  end
+end

@@ -1,4 +1,5 @@
 require 'erb'
+require 'signer'
 module MetadataHelper
   TEMPLATE = <<XML
 <?xml version="1.0" encoding="UTF-8"?>
@@ -24,5 +25,17 @@ XML
 
   def build_metadata(entries)
     ERB.new(TEMPLATE, nil, '<->').result binding
+  end
+
+  def sign_metadata(metadata, private_key, public_cert)
+    signer = Signer.new(metadata)
+    signer.cert = public_cert
+    signer.private_key = private_key
+
+    signer.security_node = signer.document.root
+    signer.security_token_id = ""
+    signer.digest!(signer.document.root, :id => "", :enveloped => true)
+    signer.sign!(:issuer_serial => true)
+    signer.to_xml
   end
 end

@@ -62,3 +62,40 @@ Feature: OCSP checks certificates in metadata
     metadata_ocsp_check OK: no revoked certificates
 
     """
+
+  Scenario: Checks signed metadata
+    Given there are the following PKIs:
+      | name            | cert_filename       |
+      | TEST_PKI_ONE    | test_pki_one.crt    |
+      | SIGNING_PKI_ONE | signing_pki_one.crt |
+    And the following certificates are defined in metadata:
+      | entity_id | key_name  | pki          | status |
+      | foo       | foo_key_1 | TEST_PKI_ONE | good   |
+    And the metadata is signed by a certificate belonging to SIGNING_PKI_ONE
+    And there is metadata at http://localhost:53003
+    And there is an OCSP responder
+    When I successfully run `sensu-metadata-ocsp-check -h http://localhost:53003 --cas test_pki_one.crt --signing_cas signing_pki_one.crt`
+    Then the output should contain exactly:
+    """
+    metadata_ocsp_check OK: no revoked certificates
+
+    """
+
+  Scenario: Checks signed metadata with revoked signing certificate
+    Given there are the following PKIs:
+      | name            | cert_filename       |
+      | TEST_PKI_ONE    | test_pki_one.crt    |
+      | SIGNING_PKI_ONE | signing_pki_one.crt |
+    And the following certificates are defined in metadata:
+      | entity_id | key_name  | pki          | status |
+      | foo       | foo_key_1 | TEST_PKI_ONE | good   |
+    And the metadata is signed by a revoked certificate belonging to SIGNING_PKI_ONE
+    And there is metadata at http://localhost:53004
+    And there is an OCSP responder
+    When I run `sensu-metadata-ocsp-check -h http://localhost:53004 --cas test_pki_one.crt --signing_cas signing_pki_one.crt`
+    Then the exit status should be 2
+    Then the output should contain exactly:
+    """
+    metadata_ocsp_check CRITICAL: The certificate named certificate for the entity 'metadata_signature' has an OCSP status of revoked
+
+    """

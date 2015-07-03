@@ -20,6 +20,11 @@ module Metadata
         }
         certificate_identities
       end
+
+      def signing_certificate(document)
+        pem = document.xpath(".//ds:Signature/ds:KeyInfo/ds:X509Data/ds:X509Certificate", "ds" => "http://www.w3.org/2000/09/xmldsig#").first.content
+        { pem => [ Entity.new("metadata_signature", "certificate") ] }
+      end
     end
   end
 end
