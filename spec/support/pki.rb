@@ -56,6 +56,11 @@ class PKI
     sign(generate_cert(cn))
   end
 
+  def generate_signed_cert_and_private_key(cn = "SIGNED TEST CERTIFICATE")
+    cert, key = *generate_cert_and_key(cn)
+    [sign(cert), key]
+  end
+
   def revoke(certificate)
     @revoked_certificates[certificate.serial.to_i] = { time: Time.now, reason: 0 }
   end

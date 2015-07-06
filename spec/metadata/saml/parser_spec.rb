@@ -9,6 +9,18 @@ end
 module Metadata
   module SAML
     describe Parser do
+      context "#signing_certificate" do
+        it "returns the signing_certificate as hash of pem string to identity" do
+          pki = PKI.new
+          public_cert, private_key = *pki.generate_signed_cert_and_private_key
+          metadata = build_metadata({})
+          signed_metadata = sign_metadata(metadata, private_key, public_cert)
+          doc = Nokogiri::XML(signed_metadata)
+          hash = Parser.new.signing_certificate(doc)
+          expect(hash).to eql({ Base64.strict_encode64(public_cert.to_der) => [Entity.new("metadata_signature", "certificate")]})
+        end
+      end
+
       context "#certificate_identities " do
         it "returns a hash of certificates to identities of their owners" do
           foo_cert_1 = "FOOCERT1"

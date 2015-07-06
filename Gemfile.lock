@@ -73,6 +73,8 @@ GEM
     sensu-plugin (1.1.0)
       json
       mixlib-cli (>= 1.1.0)
+    signer (1.4.2)
+      nokogiri (>= 1.5.1)
     sinatra (1.4.6)
       rack (~> 1.4)
       rack-protection (~> 1.4)
@@ -93,6 +95,7 @@ DEPENDENCIES
   r509-ocsp-responder (~> 0.3)
   rake (~> 10.0)
   rspec (~> 3.3)
+  signer (~> 1.4)
 
 BUNDLED WITH
    1.10.3
