@@ -2,8 +2,8 @@ require 'spec_helper'
 
 require 'pki'
 require 'ocsp_responder'
-require 'metadata/ocsp/checker'
-describe Metadata::Ocsp::Checker do
+require 'metadata/ocsp/client'
+describe Metadata::Ocsp::Client do
   before(:all) do
     @pki = PKI.new
     OCSPResponder.start!([@pki], 4568)
@@ -15,7 +15,7 @@ describe Metadata::Ocsp::Checker do
 
   let(:pki) { @pki }
   let(:checker) {
-    Metadata::Ocsp::Checker.new
+    Metadata::Ocsp::Client.new
   }
 
   let(:good_store) {

@@ -5,7 +5,7 @@ require 'metadata/ocsp/result'
 
 module Metadata
   module Ocsp
-    class Checker
+    class Client
       def initialize(options = {})
         @update_time_checker = options.fetch(:update_time_checker){UpdateTimeChecker.new} 
       end
