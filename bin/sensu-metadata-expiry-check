@@ -14,10 +14,18 @@ class SensuMetadataExpiryCheck < Sensu::Plugin::Check::CLI
   option :warning_threshold_days,
          :short => '-w DAYS',
          required: false,
-         default: 21
+         default: 30
+  option :critical_threshold_days,
+         :short => '-c DAYS',
+         required: false,
+         default: 10
+
   
   def run
-    (expired, near_expiry) = Metadata::Checker::check_expiry(config[:host], config[:disable_hostname_verification], config[:warning_threshold_days].to_i)
+    (expired, near_expiry) = Metadata::Checker::check_expiry(config[:host],
+                                                             config[:disable_hostname_verification],
+                                                             config[:warning_threshold_days].to_i,
+                                                             config[:critical_threshold_days].to_i)
     if expired.any?
       critical expired.map(&:message).join("\n")
     elsif near_expiry.any?
