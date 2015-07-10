@@ -37,9 +37,6 @@ class PKI
   end
 
   def sign(cert)
-#    puts "already: #{cert.not_before} #{cert.not_after}"
-    #cert.not_before = Time.now
-    #cert.not_after = cert.not_before + 1 * 365 * 24 * 60 * 60 # 1 years validity
     cert.issuer = @root_ca.subject # root CA is the issuer
     cert.serial = take_next_serial
     ef = OpenSSL::X509::ExtensionFactory.new
