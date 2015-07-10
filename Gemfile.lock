@@ -96,6 +96,3 @@ DEPENDENCIES
   rake (~> 10.0)
   rspec (~> 3.3)
   signer (~> 1.4)
-
-BUNDLED WITH
-   1.10.3

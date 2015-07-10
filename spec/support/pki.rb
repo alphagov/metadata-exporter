@@ -37,8 +37,6 @@ class PKI
   end
 
   def sign(cert)
-    cert.not_before = Time.now
-    cert.not_after = cert.not_before + 1 * 365 * 24 * 60 * 60 # 1 years validity
     cert.issuer = @root_ca.subject # root CA is the issuer
     cert.serial = take_next_serial
     ef = OpenSSL::X509::ExtensionFactory.new
@@ -57,7 +55,7 @@ class PKI
   end
 
   def generate_signed_cert_and_private_key(cn = "SIGNED TEST CERTIFICATE")
-    cert, key = *generate_cert_and_key(cn)
+    cert, key = *generate_cert_and_key((Time.now+60*60*24*365), cn)
     [sign(cert), key]
   end
 

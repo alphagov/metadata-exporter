@@ -28,15 +28,23 @@ Given(/^the following certificates are defined in metadata:$/) do |table|
   end
   table.hashes.each do |ent|
     pki = PKIS.fetch(ent["pki"])
-    cert = pki.sign(pki.generate_cert)
-    if ent["status"] == "revoked"
-      pki.revoke(cert)
+    if ent["status"] == "expired"
+      cert = pki.generate_cert_with_expiry(Time.now-(60*60*24*15), "EXPIRED CERT")
+    elsif ent["status"] == "near_expiry"
+      cert = pki.generate_cert_with_expiry(Time.now+(60*60*24*2), "NEARLY EXPIRED CERT")
+    else
+      cert = pki.generate_cert
     end
-    cert_value = pki.inline_pem(cert)
+    signed_cert = pki.sign(cert)
+    if ent["status"] == "revoked"
+      pki.revoke(signed_cert)
+    end
+    cert_value = pki.inline_pem(signed_cert)
     metadata_entries[ent.fetch("entity_id")] << { :key_name => ent['key_name'], :cert_value => cert_value}
   end
   @metadata = build_metadata(metadata_entries)
 end
+
 Given(/^the metadata is signed by a (revoked )?certificate belonging to (\w+)$/) do |revoked, pki_name|
   pki = PKIS.fetch(pki_name)
   signing_public_certificate, signing_private_key = *pki.generate_signed_cert_and_private_key
