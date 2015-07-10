@@ -6,8 +6,8 @@ module Metadata
     def self.check_ocsp(host, ca_files, signing_ca_files, disable_hostname_verification)
       OcspChecker.new.check_ocsp(host, ca_files, signing_ca_files, disable_hostname_verification)
     end
-    def self.check_expiry(host, disable_hostname_verification)
-      ExpiryChecker.new.check_expiry(host, disable_hostname_verification)
+    def self.check_expiry(host, disable_hostname_verification, warning_threshold_days)
+      ExpiryChecker.new.check_expiry(host, disable_hostname_verification, warning_threshold_days)
     end
   end
 end

@@ -17,7 +17,7 @@ Feature: expiry of certificates in metadata is checked
       | foo       | foo_key_2 | TEST_PKI_ONE | good   |
       | bar       | bar_key_1 | TEST_PKI_ONE | good   |
     And there is metadata at http://localhost:53010
-    When I successfully run `sensu-metadata-expiry-check -h http://localhost:53010`
+    When I successfully run `sensu-metadata-expiry-check -h http://localhost:53010 -w 14`
     Then the output should contain exactly:
     """
     metadata_expiry_check OK: no certificates near expiry
@@ -34,7 +34,7 @@ Feature: expiry of certificates in metadata is checked
       | foo       | foo_key_2 | TEST_PKI_ONE | good    |
       | bar       | bar_key_1 | TEST_PKI_ONE | near_expiry |
     Given there is metadata at http://localhost:53011
-    When I run `sensu-metadata-expiry-check -h http://localhost:53011`
+    When I run `sensu-metadata-expiry-check -h http://localhost:53011 -w 14`
     Then the exit status should be 1
     Then the output should match:
     """
@@ -52,7 +52,7 @@ Feature: expiry of certificates in metadata is checked
       | foo       | foo_key_2 | TEST_PKI_ONE | good    |
       | bar       | bar_key_1 | TEST_PKI_ONE | expired |
     Given there is metadata at http://localhost:53012
-    When I run `sensu-metadata-expiry-check -h http://localhost:53012`
+    When I run `sensu-metadata-expiry-check -h http://localhost:53012 -w 14`
     Then the exit status should be 2
     Then the output should match:
     """

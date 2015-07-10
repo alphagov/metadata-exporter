@@ -29,7 +29,7 @@ Given(/^the following certificates are defined in metadata:$/) do |table|
   table.hashes.each do |ent|
     pki = PKIS.fetch(ent["pki"])
     if ent["status"] == "expired"
-      cert = pki.generate_cert_with_expiry(Time.now-(60*60*24*2), "EXPIRED CERT")
+      cert = pki.generate_cert_with_expiry(Time.now-(60*60*24*15), "EXPIRED CERT")
     elsif ent["status"] == "near_expiry"
       cert = pki.generate_cert_with_expiry(Time.now+(60*60*24*2), "NEARLY EXPIRED CERT")
     else

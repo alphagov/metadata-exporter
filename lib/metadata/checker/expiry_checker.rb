@@ -11,14 +11,14 @@ module Metadata
         @certificate_factory = Certificate::CertificateFactory.new
       end
 
-      def check_expiry(host, disable_hostname_verification)
+      def check_expiry(host, disable_hostname_verification, warning_threshold_days)
         document = @metadata_client.get(host, disable_hostname_verification)
         certificate_identities = @parser.certificate_identities(document)
         expired = Array.new
         near_expiry = Array.new
-        threshold = 60*60*24*14 # two weeks
+        threshold = 60*60*24*warning_threshold_days
         certificate_identities.each { | pem, entity |
-          expiry = get_certificate_expiry(pem, entity)
+          expiry = @certificate_factory.from_inline_pem(pem).not_after
           if (expiry < Time.now) 
             expired.push(CertificateExpiryResult.new(entity[0], expiry, "EXPIRED"))
           elsif (expiry < (Time.now+threshold)) 
@@ -28,14 +28,6 @@ module Metadata
         return expired, near_expiry
       end
 
-      private
-
-      def get_certificate_expiry(pem, entity)
-        cert = @certificate_factory.from_inline_pem(pem)        
-#        puts "#{entity} -> #{cert.subject} @ #{cert.not_after} #{cert.not_before}"
-        cert.not_after
-      end
-      
     end
   end
 end
