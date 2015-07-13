@@ -23,7 +23,8 @@ Or install it yourself as:
 To generate a package that will distribute changes to the
 metadata-checker gem to hub:
 
-* run https://build.ida.digital.cabinet-office.gov.uk/job/package-sensu-client-gems
+* run https://build.ida.digital.cabinet-office.gov.uk/job/package-sensu-client-gems to generate a new package
+* run https://build.ida.digital.cabinet-office.gov.uk/job/third-party-yaml-release to distribute the new package
 * update the version of sensu-client-gems in ida-webops/tools/aptly/packages.yaml
 
 ## Contributing
