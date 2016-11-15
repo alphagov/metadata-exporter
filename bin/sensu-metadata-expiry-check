@@ -27,7 +27,7 @@ class SensuMetadataExpiryCheck < Sensu::Plugin::Check::CLI
                                                              config[:warning_threshold_days].to_i,
                                                              config[:critical_threshold_days].to_i)
     if expired.any?
-      critical expired.map(&:message).join("\n")
+      critical expired.map(&:message).join("\n")+"\n"+near_expiry.map(&:message).join("\n")
     elsif near_expiry.any?
       warning near_expiry.map(&:message).join("\n")
     else
