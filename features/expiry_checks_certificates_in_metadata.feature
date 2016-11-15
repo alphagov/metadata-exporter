@@ -76,4 +76,21 @@ Feature: expiry of certificates in metadata is checked
       metadata_expiry_check CRITICAL: The certificate named bar_key_1 for the entity 'bar' has a status of EXPIRED (.*)
 
       """
-
+  Scenario: Check metadata with expired certificate and certificate close to expiry
+      Given there are the following PKIs:
+        | name         | cert_filename    |
+        | TEST_PKI_ONE | test_pki_one.crt |
+      Given the following certificates are defined in metadata:
+        | entity_id | key_name  | pki          | status  |
+        | foo       | foo_key_1 | TEST_PKI_ONE | good    |
+        | foo       | foo_key_2 | TEST_PKI_ONE | near_expiry |
+        | bar       | bar_key_1 | TEST_PKI_ONE | expired |
+      Given there is metadata at http://localhost:53014
+        When I run `sensu-metadata-expiry-check -h http://localhost:53014 -w 28 -c 14`
+        Then the exit status should be 2
+        Then the output should match:
+        """
+        metadata_expiry_check CRITICAL: The certificate named bar_key_1 for the entity 'bar' has a status of EXPIRED (.*)
+        The certificate named foo_key_2 for the entity 'foo' has a status of NEAR EXPIRY (.*)
+        
+        """
