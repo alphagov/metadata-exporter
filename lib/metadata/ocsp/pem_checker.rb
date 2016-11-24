@@ -23,6 +23,7 @@ module Metadata
         chain = issuer_repository.find_chain(cert)
         store = chain.store
         issuer = chain.first
+        raise "An issuer was not found in the ca certs for #{cert.subject.to_s}" if issuer.nil?
         @ocsp_checker.check([cert], issuer, store)[cert]
       end
     end

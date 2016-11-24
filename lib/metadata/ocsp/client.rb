@@ -31,6 +31,8 @@ module Metadata
           extension.oid == 'authorityInfoAccess'
         end
 
+        raise "The certificate #{certificate.subject.to_s} does not contain an 'authorityInfoAccess' extension" if authority_info_access.nil?
+
         descriptions = authority_info_access.value.split "\n"
         ocsp = descriptions.find do |description|
           description.start_with? 'OCSP'
