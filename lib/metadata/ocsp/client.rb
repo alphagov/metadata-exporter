@@ -51,11 +51,11 @@ module Metadata
       end
 
       def make_ocsp_request(uri, ocsp_request)
-        http_response =
-          Net::HTTP.start uri.hostname, uri.port do |http|
-          http.post "/", ocsp_request.to_der,
-            'content-type' => 'application/ocsp-request'
-          end
+        http = Net::HTTP.new(uri.host, uri.port)
+        req = Net::HTTP::Post.new(uri)
+        req.content_type = 'application/ocsp-request'
+        req.body = ocsp_request.to_der
+        http_response = http.request(req)
         if http_response.code != "200"
           raise CheckerError, "Invalid response code #{http_response.code} from OCSP responder"
         end
