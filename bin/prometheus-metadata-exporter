@@ -8,6 +8,8 @@ require 'mixlib/cli' # pulled in implicitly by the sensu gem
 require 'prometheus/middleware/exporter'
 require 'sinatra/base'
 
+# require 'pp'
+
 class ExpiryDateMetric < Prometheus::Client::Gauge
     def initialize(metadata_url)
         super(:verify_federation_certificate_expiry, "The NotAfter date of the given X.509 SAML certificate")
@@ -25,14 +27,15 @@ class ExpiryDateMetric < Prometheus::Client::Gauge
 #            puts "entity key_name: #{entity[0][:key_name]}"
 #            puts "entity entity_id: #{}"
             cert = @certificate_factory.from_inline_pem(pem)
-            puts cert
-            not_on_or_after = 5 #cert.not_after
-            entity_id = entity[0][:entity_id]
+            # puts "#{pp cert}"
+            not_on_or_after = cert.not_after.to_time.to_i
+            entity_id = entity.collect { |e| e[:entity_id] }.flatten
             use = entity[0][:key_use]
-            fingerprint = "foo"
-            set({entity_id: entity_id, key_use: use, fingerprint: fingerprint}, not_on_or_after)
+            serial = cert.serial
+            set({entity_id: entity_id, key_use: use, serial: serial}, not_on_or_after)
         }
         # return the metrics to prometheus
+        # @values[label_set_for(labels)] = value.to_f
         return super
     end
 end
