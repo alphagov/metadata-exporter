@@ -71,13 +71,16 @@ class PrometheusMetadataExporter
 end
 
 class App < Sinatra::Base
-use Prometheus::Middleware::Exporter
+  use Prometheus::Middleware::Exporter
 
-    exporter = PrometheusMetadataExporter.new
-    exporter.parse_options
+  set :port, 9199
+  set :bind, '0.0.0.0'
 
-    exporter.gogogo
-      run! if app_file == $0
+  exporter = PrometheusMetadataExporter.new
+  exporter.parse_options
+
+  exporter.gogogo
+  run! if app_file == $0
 end
 
 
