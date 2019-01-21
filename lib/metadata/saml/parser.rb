@@ -15,7 +15,8 @@ module Metadata
           keys.each { |key|
             key_name = key.xpath("./ds:KeyInfo/ds:KeyName", "ds" => "http://www.w3.org/2000/09/xmldsig#").first.content
             pem = key.xpath("./ds:KeyInfo/ds:X509Data/ds:X509Certificate", "ds" => "http://www.w3.org/2000/09/xmldsig#").first.content
-            certificate_identities[pem] << Entity.new(entity_id, key_name)
+            key_use = key.xpath("./@use", "md" => "urn:oasis:names:tc:SAML:2.0:metadata")
+            certificate_identities[pem] << Entity.new(entity_id, key_name, key_use)
           }
         }
         certificate_identities
