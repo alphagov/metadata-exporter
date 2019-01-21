@@ -1,3 +1,5 @@
+require 'net/http'
+
 Given(/^there is metadata at http:\/\/localhost:(\d+)$/) do |port|
   raise "@metadata must be set!" if @metadata.nil?
   MetadataServer.new(port, @metadata).start!
@@ -54,4 +56,18 @@ Given(/^the metadata is signed by a (revoked )?certificate belonging to (\w+)$/)
   if revoked
     pki.revoke(signing_public_certificate)
   end
+end
+
+Then(/^the metrics should contain exactly:$/) do |string|
+    uri = URI('http://localhost:4567/metrics')
+    for i in 0..10
+        begin
+            Net::HTTP.start(uri.host, uri.port) do |http|
+                response = http.request Net::HTTP::Get.new uri
+                return response.body if response.code eq 200
+            end
+        rescue
+        end
+        sleep 1
+    end
 end
