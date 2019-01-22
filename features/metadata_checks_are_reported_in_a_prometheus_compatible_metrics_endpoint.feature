@@ -21,7 +21,16 @@ Feature: metadata checks are reported in a prometheus compatible metrics endpoin
     When I start the metadata server on port 53110 with ca test_pki_one.crt
     Then the metrics should contain exactly:
     """
-    metadata_expiry_check OK: no certificates near expiry
+      # TYPE verify_federation_certificate_expiry gauge
+      # HELP verify_federation_certificate_expiry The NotAfter date of the given X.509 SAML certificate
+      verify_federation_certificate_expiry{entity_id="foo",key_use="encryption",key_name="foo_key_1",serial="2"} 1579697902000.0
+      verify_federation_certificate_expiry{entity_id="foo",key_use="encryption",key_name="foo_key_2",serial="3"} 1579697902000.0
+      verify_federation_certificate_expiry{entity_id="bar",key_use="encryption",key_name="bar_key_1",serial="4"} 1579697903000.0
+      # TYPE verify_federation_certificate_ocsp_success gauge
+      # HELP verify_federation_certificate_ocsp_success If an OCSP check of the given X.509 SAML certificate is good (1) or bad (0)
+      verify_federation_certificate_ocsp_success{entity_id="foo",key_use="encryption",key_name="foo_key_1",serial="2"} 1.0
+      verify_federation_certificate_ocsp_success{entity_id="foo",key_use="encryption",key_name="foo_key_2",serial="3"} 1.0
+      verify_federation_certificate_ocsp_success{entity_id="bar",key_use="encryption",key_name="bar_key_1",serial="4"} 1.0
 
     """
 #

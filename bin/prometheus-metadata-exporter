@@ -59,11 +59,6 @@ class OcspCheckMetric < Prometheus::Client::Gauge
     document = @metadata_client.get(@metadata_url, false)
     certificate_identities = @parser.certificate_identities(document)
 
-    # what's the diff between signing_certs and cert_identi ?
-    # this is not configured to run in puppet for the sensu check - the param is empty and
-    # therefore the check doesn't get run
-    # certificate_identities = @parser.signing_certificate(document)
-
     pems = certificate_identities.keys
     ocsp_results = @pem_checker.check_pems(pems, @ca_files)
     certificate_identities.map do |pem, identities|
