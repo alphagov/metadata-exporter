@@ -58,29 +58,29 @@ Given(/^the metadata is signed by a (revoked )?certificate belonging to (\w+)$/)
   end
 end
 
-Then(/^the metrics should contain exactly:$/) do |expected_string|
-    uri = URI('http://localhost:9199/metrics')
+Then(/^the metrics on port (\d+) should contain exactly:$/) do |port, expected_string|
+    uri = URI("http://localhost:#{port}/metrics")
     for i in 0..10
         begin
             Net::HTTP.start(uri.host, uri.port) do |http|
                 response = http.request Net::HTTP::Get.new uri
                 puts response.body
                 if response.code eq? 200
-                    assert response.body eq? expected_string, "unexpected output"
-                    next
+                    expect (response.body).to eq(expected_string)
+                    break # not working???
                 end
             end
         rescue
         end
         sleep 1
     end
-    assert false
+    fail if false
 end
 
 # http://fractio.nl/2010/09/14/testing-daemons-with-cucumber/
-When /^I start the metadata server on port (\d+) with ca (.*)$/ do |port, ca_file|
+When /^I start the prometheus client on port (\d+) with metadata on port (\d+) with ca (.*)$/ do |pcport, mport, ca_file|
   @root = Pathname.new(File.dirname(__FILE__)).parent.parent.expand_path
-  command = "#{@root.join('bin')}/prometheus-metadata-exporter -h http://localhost:#{port} --cas tmp/aruba/#{ca_file}"
+  command = "#{@root.join('bin')}/prometheus-metadata-exporter -p #{pcport} -h http://localhost:#{mport} --cas tmp/aruba/#{ca_file}"
 
   @pipe = IO.popen(command, "r")
   sleep 2 # so the daemon has a chance to boot

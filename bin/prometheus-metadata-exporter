@@ -75,6 +75,7 @@ end
 class PrometheusMetadataExporter
   include Mixlib::CLI
 
+  option :port, :short => '-p PORT', required: false, default: 9199
   option :host, :short => '-h HOST', required: true
   option :ca_file_list, :long => '--cas FILES', required: true
 
@@ -87,11 +88,11 @@ end
 class App < Sinatra::Base
   use Prometheus::Middleware::Exporter
 
-  set :port, 9199
-  set :bind, '0.0.0.0'
-
   exporter = PrometheusMetadataExporter.new
   exporter.parse_options
+
+  set :port, exporter.config[:port]
+  set :bind, '0.0.0.0'
 
   exporter.gogogo
   run! if app_file == $0

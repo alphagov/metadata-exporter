@@ -18,8 +18,8 @@ Feature: metadata checks are reported in a prometheus compatible metrics endpoin
       | bar       | bar_key_1 | TEST_PKI_ONE | good   |
     And there is metadata at http://localhost:53110
     And there is an OCSP responder
-    When I start the metadata server on port 53110 with ca test_pki_one.crt
-    Then the metrics should contain exactly:
+    When I start the prometheus client on port 2020 with metadata on port 53110 with ca test_pki_one.crt
+    Then the metrics on port 2020 should contain exactly:
     """
       # TYPE verify_federation_certificate_expiry gauge
       # HELP verify_federation_certificate_expiry The NotAfter date of the given X.509 SAML certificate
@@ -45,8 +45,8 @@ Feature: metadata checks are reported in a prometheus compatible metrics endpoin
       | bar       | bar_key_1 | TEST_PKI_ONE | revoked   |
     And there is metadata at http://localhost:53111
     And there is an OCSP responder
-    When I start the metadata server on port 53111 with ca test_pki_one.crt
-    Then the metrics should contain exactly:
+    When I start the prometheus client on port 2021 with metadata on port 53111 with ca test_pki_one.crt
+    Then the metrics on port 2021 should contain exactly:
     """
       # TYPE verify_federation_certificate_expiry gauge
       # HELP verify_federation_certificate_expiry The NotAfter date of the given X.509 SAML certificate
