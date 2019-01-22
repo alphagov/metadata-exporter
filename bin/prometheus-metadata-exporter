@@ -20,7 +20,11 @@ class ExpiryDateMetric < Prometheus::Client::Gauge
     @certificate_factory = Metadata::Certificate::CertificateFactory.new
   end
   def values
-    # we're being scraped, let's update the metrics
+    # we're being scraped
+
+    # we create a new gauge each time to avoid keeping metrics for
+    # certificates which have been removed from metadata
+    gauge = Prometheus::Client::Gauge.new(name, docstring)
     document = @metadata_client.get(@metadata_url, false)
     certificate_identities = @parser.certificate_identities(document)
     #        puts certificate_identities
@@ -32,12 +36,12 @@ class ExpiryDateMetric < Prometheus::Client::Gauge
       # grafana prefers timestamps to be in milliseconds :(
       not_on_or_after = cert.not_after.to_time.to_f * 1000
       entity.each do |e|
-        set({entity_id: e[:entity_id], key_use: e[:key_use], serial: cert.serial}, not_on_or_after)
+        gauge.set({entity_id: e[:entity_id], key_use: e[:key_use], serial: cert.serial}, not_on_or_after)
       end
     }
     # return the metrics to prometheus
     # @values[label_set_for(labels)] = value.to_f
-    return super
+    return gauge.values
   end
 end
 
