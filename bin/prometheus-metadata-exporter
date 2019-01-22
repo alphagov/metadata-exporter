@@ -29,11 +29,11 @@ class ExpiryDateMetric < Prometheus::Client::Gauge
       #            puts "entity entity_id: #{}"
       cert = @certificate_factory.from_inline_pem(pem)
       # puts "#{pp cert}"
-      not_on_or_after = cert.not_after.to_time.to_i
-      entity_id = entity.collect { |e| e[:entity_id] }.flatten
-      use = entity[0][:key_use]
-      serial = cert.serial
-      set({entity_id: entity_id, key_use: use, serial: serial}, not_on_or_after)
+      # grafana prefers timestamps to be in milliseconds :(
+      not_on_or_after = cert.not_after.to_time.to_f * 1000
+      entity.each do |e|
+        set({entity_id: e[:entity_id], key_use: e[:key_use], serial: cert.serial}, not_on_or_after)
+      end
     }
     # return the metrics to prometheus
     # @values[label_set_for(labels)] = value.to_f
