@@ -1,12 +1,8 @@
 Feature: metadata checks are reported in a prometheus compatible metrics endpoint
 
-  In order to gurantee the health of the federation,
+  In order to guarantee the health of the federation,
   As a person running a Verify Hub,
   I want to be capture metrics about certificates in the Verify Federation metadata
-
-  In order to gurantee the health of the federation,
-  As a service manager,
-  I want to be alerted if our metadata contains certificates that will expire soon
 
   Background:
     Given the OCSP port is 54000
@@ -20,8 +16,9 @@ Feature: metadata checks are reported in a prometheus compatible metrics endpoin
       | foo       | foo_key_1 | TEST_PKI_ONE | good   |
       | foo       | foo_key_2 | TEST_PKI_ONE | good   |
       | bar       | bar_key_1 | TEST_PKI_ONE | good   |
-    And there is metadata at http://localhost:53010
-    When I successfully run `prometheus-metadata-exporter -h http://localhost:53010`
+    And there is metadata at http://localhost:53110
+    And there is an OCSP responder
+    When I start the metadata server on port 53110 with ca test_pki_one.crt
     Then the metrics should contain exactly:
     """
     metadata_expiry_check OK: no certificates near expiry
