@@ -58,16 +58,35 @@ Given(/^the metadata is signed by a (revoked )?certificate belonging to (\w+)$/)
   end
 end
 
-Then(/^the metrics should contain exactly:$/) do |string|
-    uri = URI('http://localhost:9199/metrics')
-    for i in 0..10
-        begin
-            Net::HTTP.start(uri.host, uri.port) do |http|
-                response = http.request Net::HTTP::Get.new uri
-                return response.body if response.code eq 200
-            end
-        rescue
+Then(/^the metrics on port (\d+) should contain exactly:$/) do |port, expected_string|
+    uri = URI("http://localhost:#{port}/metrics")
+    begin
+        Net::HTTP.start(uri.host, uri.port) do |http|
+            response = http.request Net::HTTP::Get.new uri
+            expect(response.code).to eq("200")
+#            expected_string_lines = expected_string.lines
+#            response_lines = response.body.lines
+#            expect(expected_string_lines.length).to eq(response_lines.length)
+#            for i in 0..expected_string_lines.length-1
+#                expect(response_lines[i].chomp).to match(Regexp.new(expected_string_lines[i].chomp))
+#            end
+            expect(response.body.chomp).to match(Regexp.new(expected_string.chomp))
         end
-        sleep 1
+    rescue
+        fail
     end
+end
+
+# http://fractio.nl/2010/09/14/testing-daemons-with-cucumber/
+When /^I start the prometheus client on port (\d+) with metadata on port (\d+) with ca (.*)$/ do |pcport, mport, ca_file|
+  @root = Pathname.new(File.dirname(__FILE__)).parent.parent.expand_path
+  command = "#{@root.join('bin')}/prometheus-metadata-exporter -p #{pcport} -h http://localhost:#{mport} --cas tmp/aruba/#{ca_file}"
+
+  @pipe = IO.popen(command, "r")
+  sleep 2 # so the daemon has a chance to boot
+
+  # clean up the daemon when the tests finish
+  at_exit do
+    Process.kill("KILL", @pipe.pid)
+  end
 end

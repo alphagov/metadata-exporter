@@ -2,6 +2,7 @@ FROM ruby:2.5.3
 
 EXPOSE 9199
 
+RUN gem install --no-document bundler
 RUN mkdir /app
 WORKDIR   /app
 

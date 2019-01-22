@@ -4,7 +4,7 @@ source 'https://rubygems.org'
 gemspec
 
 group :test do
-  gem 'r509-ocsp-responder', '~>0.3'
+  gem 'r509-ocsp-responder', git: 'https://github.com/r509/r509-ocsp-responder.git', ref: 'dce3812bea227d2c48614822e6666ab5d93d2fb1'
   gem 'aruba'
 end
 
