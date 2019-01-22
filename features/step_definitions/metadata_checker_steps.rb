@@ -60,21 +60,14 @@ end
 
 Then(/^the metrics on port (\d+) should contain exactly:$/) do |port, expected_string|
     uri = URI("http://localhost:#{port}/metrics")
-    for i in 0..10
-        begin
-            Net::HTTP.start(uri.host, uri.port) do |http|
-                response = http.request Net::HTTP::Get.new uri
-                puts response.body
-                if response.code eq? 200
-                    expect (response.body).to eq(expected_string)
-                    break # not working???
-                end
-            end
-        rescue
+    begin
+        Net::HTTP.start(uri.host, uri.port) do |http|
+            response = http.request Net::HTTP::Get.new uri
+            expect(response.code).to eq("200")
+            expect(response.body).to match(expected_string)
         end
-        sleep 1
+    rescue
     end
-    fail if false
 end
 
 # http://fractio.nl/2010/09/14/testing-daemons-with-cucumber/
