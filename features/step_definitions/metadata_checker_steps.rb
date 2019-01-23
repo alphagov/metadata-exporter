@@ -64,12 +64,6 @@ Then(/^the metrics on port (\d+) should contain exactly:$/) do |port, expected_s
         Net::HTTP.start(uri.host, uri.port) do |http|
             response = http.request Net::HTTP::Get.new uri
             expect(response.code).to eq("200")
-#            expected_string_lines = expected_string.lines
-#            response_lines = response.body.lines
-#            expect(expected_string_lines.length).to eq(response_lines.length)
-#            for i in 0..expected_string_lines.length-1
-#                expect(response_lines[i].chomp).to match(Regexp.new(expected_string_lines[i].chomp))
-#            end
             expect(response.body.chomp).to match(Regexp.new(expected_string.chomp))
         end
     rescue
@@ -80,6 +74,7 @@ end
 # http://fractio.nl/2010/09/14/testing-daemons-with-cucumber/
 When /^I start the prometheus client on port (\d+) with metadata on port (\d+) with ca (.*)$/ do |pcport, mport, ca_file|
   @root = Pathname.new(File.dirname(__FILE__)).parent.parent.expand_path
+  # note that the metadata cert is not checked :/
   command = "#{@root.join('bin')}/prometheus-metadata-exporter -p #{pcport} -h http://localhost:#{mport} --cas tmp/aruba/#{ca_file}"
 
   @pipe = IO.popen(command, "r")
