@@ -47,7 +47,12 @@ class ExpiryDateMetric < Prometheus::Client::Gauge
       # grafana prefers timestamps to be in milliseconds :(
       not_on_or_after = cert.not_after.to_time.to_f * 1000
       entity.each do |e|
-        gauge.set({entity_id: e[:entity_id], use: e[:key_use], key_name: e[:key_name], serial: cert.serial}, not_on_or_after)
+        gauge.set({     entity_id: e[:entity_id],
+                        use: e[:key_use],
+                        key_name: e[:key_name],
+                        serial: cert.serial,
+                        subject: cert.subject,
+                  }, not_on_or_after)
       end
     end
   end
@@ -91,7 +96,13 @@ class OcspCheckMetric < Prometheus::Client::Gauge
       ocsp_results = @pem_checker.check_pems(pems, ca_files)
       certificate_identities.map do |pem, identities|
         identities.map do |identity|
-          gauge.set({entity_id: identity.entity_id, use: identity.key_use, key_name: identity.key_name, serial: @certificate_factory.from_inline_pem(pem).serial}, ocsp_results[pem].revoked? ? 0 : 1)
+          cert = @certificate_factory.from_inline_pem(pem)
+          gauge.set({    entity_id: identity.entity_id,
+                         use: identity.key_use,
+                         key_name: identity.key_name,
+                         serial: cert.serial,
+                         subject: cert.subject,
+                    }, ocsp_results[pem].revoked? ? 0 : 1)
         end
       end
   end
