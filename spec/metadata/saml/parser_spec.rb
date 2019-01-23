@@ -42,9 +42,9 @@ module Metadata
 
           certificate_identities = Parser.new.certificate_identities(doc)
           expected_identities = {
-            foo_cert_1 => [Entity.new("foo_id", "foo_1")],
-            foo_cert_2 => [Entity.new("foo_id", "foo_2")],
-            bar_cert_1 => [Entity.new("bar_id", "bar_1")]
+            foo_cert_1 => [Entity.new("foo_id", "foo_1", "encryption")],
+            foo_cert_2 => [Entity.new("foo_id", "foo_2", "encryption")],
+            bar_cert_1 => [Entity.new("bar_id", "bar_1", "encryption")]
           }
           expect(certificate_identities).to eq expected_identities
         end
@@ -67,9 +67,9 @@ module Metadata
           certificate_identities = Parser.new.certificate_identities(doc)
           expected_identities = {
             foo_cert_1 => [
-              Entity.new("foo_id", "foo_1"),
-              Entity.new("foo_id", "foo_2"),
-              Entity.new("bar_id", "bar_1")
+              Entity.new("foo_id", "foo_1", "encryption"),
+              Entity.new("foo_id", "foo_2", "encryption"),
+              Entity.new("bar_id", "bar_1", "encryption")
             ]
           }
           expect(certificate_identities).to eq expected_identities

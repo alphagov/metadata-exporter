@@ -18,7 +18,7 @@ Feature: expiry of certificates in metadata is checked
       | bar       | bar_key_1 | TEST_PKI_ONE | good   |
     And there is metadata at http://localhost:53010
     When I successfully run `sensu-metadata-expiry-check -h http://localhost:53010 -w 28 -c 14`
-    Then the output should contain exactly:
+    Then the output should contain:
     """
     metadata_expiry_check OK: no certificates near expiry
 
