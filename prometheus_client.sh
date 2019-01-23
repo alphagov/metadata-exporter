@@ -18,11 +18,4 @@ bundle check || bundle install
 
 docker run --rm --name prometheus -d -v $PWD/prometheus.yml:/etc/prometheus/prometheus.yml -p 9090:9090 prom/prometheus
 
-CAS=../verify-puppet/modules/ida_truststore/files/federation_ca_certs/idap-core-test-ca.crt,../verify-puppet/modules/ida_truststore/files/federation_ca_certs/idap-test-ca.crt,../verify-puppet/modules/ida_truststore/files/federation_ca_certs/idap-test-root-ca.crt
-METADATA_CAS=../verify-puppet/modules/ida_truststore/files/federation_ca_certs/idap-metadata-test-ca.crt,../verify-puppet/modules/ida_truststore/files/federation_ca_certs/idap-test-root-ca.crt
-if [ "$env" == "" ]; then
-    CAS=../verify-puppet/modules/ida_truststore/files/federation_ca_certs/idap-core-ca-g2.crt,../verify-puppet/modules/ida_truststore/files/federation_ca_certs/idap-ca-g2.crt,../verify-puppet/modules/ida_truststore/files/federation_ca_certs/idap-root-ca.crt
-METADATA_CAS=../verify-puppet/modules/ida_truststore/files/federation_ca_certs/idap-metadata-ca-g2.crt,../verify-puppet/modules/ida_truststore/files/federation_ca_certs/idap-root-ca.crt
-fi
-
-bundle exec bin/prometheus-metadata-exporter -h https://${signin_domain}/SAML2/metadata/federation --cas $CAS --metadata_cas $METADATA_CAS
+bundle exec bin/prometheus-metadata-exporter -h https://${signin_domain}/SAML2/metadata/federation --cas ../verify-puppet/modules/ida_truststore/files/federation_ca_certs/
