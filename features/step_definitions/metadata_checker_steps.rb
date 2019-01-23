@@ -72,9 +72,9 @@ Then(/^the metrics on port (\d+) should contain exactly:$/) do |port, expected_s
 end
 
 # http://fractio.nl/2010/09/14/testing-daemons-with-cucumber/
-When /^I start the prometheus client on port (\d+) with metadata on port (\d+) with metadata ca (.+) and ca (.*)$/ do |pcport, mport, metadata_ca_file, ca_file|
+When /^I start the prometheus client on port (\d+) with metadata on port (\d+) with ca (.*)$/ do |pcport, mport, ca_file|
   @root = Pathname.new(File.dirname(__FILE__)).parent.parent.expand_path
-  command = "#{@root.join('bin')}/prometheus-metadata-exporter -p #{pcport} -h http://localhost:#{mport} --cas tmp/aruba/#{ca_file} --metadata_cas tmp/aruba/#{metadata_ca_file}"
+  command = "#{@root.join('bin')}/prometheus-metadata-exporter -p #{pcport} -m http://localhost:#{mport} --cas tmp/aruba/"
 
   @pipe = IO.popen(command, "r")
   sleep 2 # so the daemon has a chance to boot
