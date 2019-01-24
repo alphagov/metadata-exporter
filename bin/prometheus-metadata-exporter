@@ -69,11 +69,11 @@ class ExpiryDateMetric < Prometheus::Client::Gauge
       not_on_or_after = cert.not_after.to_time.to_f * 1000
       entity.each do |e|
         gauge.set({     entity_id: e[:entity_id],
-                        key_use: e[:key_use],
+                        use: e[:key_use],
                         key_name: e[:key_name],
                         serial: cert.serial,
-                        cn: cert.subject.to_a.detect { |x|x[0]=='CN' }[1] },
-                    not_on_or_after)
+                        subject: cert.subject,
+                  }, not_on_or_after)
       end
     end
   end
@@ -118,11 +118,11 @@ class OcspCheckMetric < Prometheus::Client::Gauge
         identities.map do |identity|
           cert = @certificate_factory.from_inline_pem(pem)
           gauge.set({    entity_id: identity.entity_id,
-                         key_use: identity.key_use,
+                         use: identity.key_use,
                          key_name: identity.key_name,
                          serial: cert.serial,
-                         cn: cert.subject.to_a.detect { |x|x[0]=='CN' }[1] },
-                     ocsp_results[pem].revoked? ? 0 : 1)
+                         subject: cert.subject,
+                    }, ocsp_results[pem].revoked? ? 0 : 1)
         end
       end
   end
