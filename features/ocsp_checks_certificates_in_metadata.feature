@@ -19,7 +19,7 @@ Feature: OCSP checks certificates in metadata
     And there is metadata at http://localhost:53001
     And there is an OCSP responder
     When I successfully run `sensu-metadata-ocsp-check -h http://localhost:53001 --cas test_pki_one.crt`
-    Then the output should contain exactly:
+    Then the output should contain:
     """
     metadata_ocsp_check OK: no revoked certificates
 
@@ -38,7 +38,7 @@ Feature: OCSP checks certificates in metadata
     And there is an OCSP responder
     When I run `sensu-metadata-ocsp-check -h http://localhost:53000 --cas test_pki_one.crt`
     Then the exit status should be 2
-    Then the output should contain exactly:
+    Then the output should contain:
     """
     metadata_ocsp_check CRITICAL: The certificate named bar_key_1 for the entity 'bar' has an OCSP status of revoked
 
@@ -57,7 +57,7 @@ Feature: OCSP checks certificates in metadata
     And there is metadata at http://localhost:53002
     And there is an OCSP responder
     When I successfully run `sensu-metadata-ocsp-check -h http://localhost:53002 --cas test_pki_one.crt,test_pki_two.crt`
-    Then the output should contain exactly:
+    Then the output should contain:
     """
     metadata_ocsp_check OK: no revoked certificates
 
@@ -75,7 +75,7 @@ Feature: OCSP checks certificates in metadata
     And there is metadata at http://localhost:53003
     And there is an OCSP responder
     When I successfully run `sensu-metadata-ocsp-check -h http://localhost:53003 --cas test_pki_one.crt --signing_cas signing_pki_one.crt`
-    Then the output should contain exactly:
+    Then the output should contain:
     """
     metadata_ocsp_check OK: no revoked certificates
 
@@ -94,7 +94,7 @@ Feature: OCSP checks certificates in metadata
     And there is an OCSP responder
     When I run `sensu-metadata-ocsp-check -h http://localhost:53004 --cas test_pki_one.crt --signing_cas signing_pki_one.crt`
     Then the exit status should be 2
-    Then the output should contain exactly:
+    Then the output should contain:
     """
     metadata_ocsp_check CRITICAL: The certificate named certificate for the entity 'metadata_signature' has an OCSP status of revoked
 

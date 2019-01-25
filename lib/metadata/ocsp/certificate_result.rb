@@ -1,7 +1,7 @@
 require 'forwardable'
 CertificateResult = Struct.new(:identity, :result) do
   extend Forwardable
-  def_delegators :identity, :entity_id, :key_name
+  def_delegators :identity, :entity_id, :key_name, :key_use
   def_delegators :result, :revoked?, :status
 
   def message

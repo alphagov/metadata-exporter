@@ -1,6 +1,10 @@
 # Metadata Checker
 
-TODO: Write a gem description
+This contains three related binares:
+
+ - `sensu-metadata-expiry-check`: a sensu check for whether certificates in a SAML metadata URL are expiring soon
+ - `sensu-metadata-ocsp-check`: a sensu check for whether certificates in a SAML metadata URL are valid over OCSP, and that they chain to the appropriate CA
+ - `prometheus-metadata-exporter`: a prometheus exporter that exports metrics about SAML metadata.
 
 ## Installation
 
@@ -25,6 +29,18 @@ metadata-checker gem to hub:
 
 * run https://build.ida.digital.cabinet-office.gov.uk/job/package-sensu-client-gems to generate a new package
 * update the version of sensu-client-gems in ida-webops/tools/aptly/packages.yaml
+
+## Prometheus exporter
+
+To run the prometheus exporter:
+
+    bundle exec bin/prometheus-metadata-exporter -m METADATA_URL --cas DIRECTORY_OF_CA_CERTIFICATE_FILES
+
+The following metrics are exported:
+
+    - `verify_federation_metadata_expiry`: when the SAML metadata signature expires
+    - `verify_federation_certificate_expiry`: when the given certificate expires
+    - `verify_federation_certificate_ocsp_success`: whether the given certificate passes OCSP
 
 ## Contributing
 
