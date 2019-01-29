@@ -38,9 +38,9 @@ To run the prometheus exporter:
 
 The following metrics are exported:
 
-    - `verify_federation_metadata_expiry`: when the SAML metadata signature expires
-    - `verify_federation_certificate_expiry`: when the given certificate expires
-    - `verify_federation_certificate_ocsp_success`: whether the given certificate passes OCSP
+    - `verify_metadata_expiry`: when the SAML metadata signature expires
+    - `verify_metadata_certificate_expiry`: when the given certificate expires
+    - `verify_metadata_certificate_ocsp_success`: whether the given certificate passes OCSP
 
 ## Contributing
 
