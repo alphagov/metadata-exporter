@@ -14,7 +14,8 @@ module Metadata
           entity_id = entity["entityID"]
           keys = entity.xpath(".//md:KeyDescriptor")
           keys.each { |key|
-            key_name = key.xpath("./ds:KeyInfo/ds:KeyName", "ds" => "http://www.w3.org/2000/09/xmldsig#").first.content
+            key_name_element = key.xpath("./ds:KeyInfo/ds:KeyName", "ds" => "http://www.w3.org/2000/09/xmldsig#").first
+            key_name = key_name_element ? key_name_element.content : ""
             pem = key.xpath("./ds:KeyInfo/ds:X509Data/ds:X509Certificate", "ds" => "http://www.w3.org/2000/09/xmldsig#").first.content
             key_use = key.xpath("./@use", "md" => "urn:oasis:names:tc:SAML:2.0:metadata").first.value
             certificate_identities[pem] << Entity.new(entity_id, key_name, key_use)
@@ -30,8 +31,9 @@ module Metadata
 
     def valid_until(document)
       # grafana prefers timestamps to be in milliseconds :(
-      attributes = document.xpath("./md:EntitiesDescriptor/@validUntil", "md" => "urn:oasis:names:tc:SAML:2.0:metadata")
-      attribute = attributes.first
+      # EntitiesDescriptor for hub federation metadata, EntityDescriptor for eidas metadata
+      attribute = document.xpath("./md:EntitiesDescriptor/@validUntil", "md" => "urn:oasis:names:tc:SAML:2.0:metadata").first ||
+                   document.xpath("./md:EntityDescriptor/@validUntil", "md" => "urn:oasis:names:tc:SAML:2.0:metadata").first
       Time.parse(attribute.value).to_f*1000
     end
     end
