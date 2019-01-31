@@ -70,7 +70,6 @@ class ExpiryDateMetric < Prometheus::Client::Gauge
       entity.each do |e|
         gauge.set({     entity_id: e[:entity_id],
                         use: e[:key_use],
-                        key_name: e[:key_name],
                         serial: cert.serial,
                         subject: cert.subject,
                   }, not_on_or_after)
@@ -119,7 +118,6 @@ class OcspCheckMetric < Prometheus::Client::Gauge
           cert = @certificate_factory.from_inline_pem(pem)
           gauge.set({    entity_id: identity.entity_id,
                          use: identity.key_use,
-                         key_name: identity.key_name,
                          serial: cert.serial,
                          subject: cert.subject,
                     }, ocsp_results[pem].revoked? ? 0 : 1)
