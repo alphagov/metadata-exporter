@@ -1,36 +1,22 @@
-# Metadata Checker
+# Metadata Exporter
 
-This contains three related binares:
-
- - `sensu-metadata-expiry-check`: a sensu check for whether certificates in a SAML metadata URL are expiring soon
- - `sensu-metadata-ocsp-check`: a sensu check for whether certificates in a SAML metadata URL are valid over OCSP, and that they chain to the appropriate CA
- - `prometheus-metadata-exporter`: a prometheus exporter that exports metrics about SAML metadata.
+A prometheus exporter that exports metrics about SAML metadata.
 
 ## Installation
 
-Add this line to your application's Gemfile:
+Install it yourself as:
 
-```ruby
-gem 'metadata-checker'
-```
+    $ gem install metadata-exporter
 
-And then execute:
+## Packaging
 
-    $ bundle
+To generate a package for metadata-exporter:
 
-Or install it yourself as:
+    docker build
 
-    $ gem install metadata-checker
+Then upload the image to the desired repository.
 
 ## Usage
-
-To generate a package that will distribute changes to the
-metadata-checker gem to hub:
-
-* run https://build.ida.digital.cabinet-office.gov.uk/job/package-sensu-client-gems to generate a new package
-* update the version of sensu-client-gems in ida-webops/tools/aptly/packages.yaml
-
-## Prometheus exporter
 
 To run the prometheus exporter:
 
@@ -44,7 +30,7 @@ The following metrics are exported:
 
 ## Contributing
 
-1. Fork it ( https://github.com/[my-github-username]/metadata-ocsp-checker/fork )
+1. Fork it ( https://github.com/[my-github-username]/metadata-exporter/fork )
 2. Create your feature branch (`git checkout -b my-new-feature`)
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
