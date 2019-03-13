@@ -17,7 +17,7 @@ module Metadata
           signed_metadata = sign_metadata(metadata, private_key, public_cert)
           doc = Nokogiri::XML(signed_metadata)
           hash = Parser.new.signing_certificate(doc)
-          expect(hash).to eql({ Base64.strict_encode64(public_cert.to_der) => [Entity.new("metadata_signature", "certificate")]})
+          expect(hash).to eql({ Base64.strict_encode64(public_cert.to_der) => [Entity.new("metadata_signing_certificate")]})
         end
       end
 
