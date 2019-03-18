@@ -1,11 +1,13 @@
 #!/usr/bin/env ruby
 # coding: utf-8
 
+require 'metadata/certificate/certificate_factory'
 require 'metadata/checker'
+require 'metadata/expiry/certificate_result'
+require 'metadata/ocsp/pem_checker'
 require 'metadata/saml/parser'
 require 'metadata/saml/client'
-require 'metadata/expiry/certificate_result'
-require 'mixlib/cli' # pulled in implicitly by the sensu gem
+require 'mixlib/cli'
 require 'prometheus/middleware/exporter'
 require 'sinatra/base'
 
