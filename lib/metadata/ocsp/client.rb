@@ -16,13 +16,23 @@ module Metadata
           hash
         }
         ocsp_uri = find_ocsp_uri(certificates.first)
-        ocsp_request = build_ocsp_request_body(cert_ids.values)
-        ocsp_response = make_ocsp_request(ocsp_uri, ocsp_request)
-        cert_id_statuses = check_response(ocsp_request, ocsp_response, cert_ids.values, store)
-        certificates.inject({}) { |hash, certificate|
-          hash[certificate] = cert_id_statuses[cert_ids[certificate]]
-          hash
-        }
+        unless ocsp_uri.nil?
+          ocsp_request = build_ocsp_request_body(cert_ids.values)
+          ocsp_response = make_ocsp_request(ocsp_uri, ocsp_request)
+          cert_id_statuses = check_response(ocsp_request, ocsp_response, cert_ids.values, store)
+          certificates.inject({}) { |hash, certificate|
+            hash[certificate] = cert_id_statuses[cert_ids[certificate]]
+            hash
+          }
+        else
+          certificates.inject({}) { |hash, certificate|
+            hash[certificate] = Result.new(
+                REVOCATION_STATUS.fetch(2),
+                CRLREASON[0]
+            )
+            hash
+          }
+        end
       end
 
       private
@@ -31,7 +41,10 @@ module Metadata
           extension.oid == 'authorityInfoAccess'
         end
 
-        raise "The certificate #{certificate.subject.to_s} does not contain an 'authorityInfoAccess' extension" if authority_info_access.nil?
+        if authority_info_access.nil?
+          warn("The certificate #{certificate.subject.to_s} does not contain an 'authorityInfoAccess' extension")
+          return nil
+        end
 
         descriptions = authority_info_access.value.split "\n"
         ocsp = descriptions.find do |description|
@@ -69,7 +82,7 @@ module Metadata
         basic_response = ocsp_response.basic
         fail CheckerError, "could not verify response against issuer certificates" unless basic_response.verify([], store)
         statuses = basic_response.status
-        results = statuses.inject({}) do |hash,status|
+          results = statuses.inject({}) do |hash,status|
           received_cert_id, revocation_status, revocation_reason, _, this_update, _, _ = *status
           cert_ids.each do |cert_id|
             if received_cert_id.cmp(cert_id)
