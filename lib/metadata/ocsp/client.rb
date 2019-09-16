@@ -16,20 +16,20 @@ module Metadata
           hash
         }
         ocsp_uri = find_ocsp_uri(certificates.first)
-        unless ocsp_uri.nil?
-          ocsp_request = build_ocsp_request_body(cert_ids.values)
-          ocsp_response = make_ocsp_request(ocsp_uri, ocsp_request)
-          cert_id_statuses = check_response(ocsp_request, ocsp_response, cert_ids.values, store)
-          certificates.inject({}) { |hash, certificate|
-            hash[certificate] = cert_id_statuses[cert_ids[certificate]]
-            hash
-          }
-        else
+        if ocsp_uri.nil?
           certificates.inject({}) { |hash, certificate|
             hash[certificate] = Result.new(
                 REVOCATION_STATUS.fetch(2),
                 CRLREASON[0]
             )
+            hash
+          }
+        else
+          ocsp_request = build_ocsp_request_body(cert_ids.values)
+          ocsp_response = make_ocsp_request(ocsp_uri, ocsp_request)
+          cert_id_statuses = check_response(ocsp_request, ocsp_response, cert_ids.values, store)
+          certificates.inject({}) { |hash, certificate|
+            hash[certificate] = cert_id_statuses[cert_ids[certificate]]
             hash
           }
         end
@@ -82,7 +82,7 @@ module Metadata
         basic_response = ocsp_response.basic
         fail CheckerError, "could not verify response against issuer certificates" unless basic_response.verify([], store)
         statuses = basic_response.status
-          results = statuses.inject({}) do |hash,status|
+        results = statuses.inject({}) do |hash,status|
           received_cert_id, revocation_status, revocation_reason, _, this_update, _, _ = *status
           cert_ids.each do |cert_id|
             if received_cert_id.cmp(cert_id)

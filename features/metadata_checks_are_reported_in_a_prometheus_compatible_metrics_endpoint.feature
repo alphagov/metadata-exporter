@@ -23,21 +23,21 @@ Feature: metadata checks are reported in a prometheus compatible metrics endpoin
     When I start the prometheus client on port 2040 with metadata on port 53110 with ca test_pki_one.crt
     Then the metrics on port 2040 should contain exactly:
     """
-verify_metadata_certificate_expiry{entity_id="foo",use="encryption",serial="2",subject="/DC=org/DC=TEST/CN=GENERATED TEST CERTIFICATE"} (\d+).0
-verify_metadata_certificate_expiry{entity_id="foo",use="encryption",serial="3",subject="/DC=org/DC=TEST/CN=GENERATED TEST CERTIFICATE"} (\d+).0
-verify_metadata_certificate_expiry{entity_id="bar",use="encryption",serial="4",subject="/DC=org/DC=TEST/CN=GENERATED TEST CERTIFICATE"} (\d+).0
-verify_metadata_certificate_expiry{entity_id="metadata_signing_certificate",use="",serial="2",subject="/DC=org/DC=TEST/CN=SIGNED TEST CERTIFICATE"} (\d+).0
+    verify_metadata_certificate_expiry{entity_id="foo",use="encryption",serial="2",subject="/DC=org/DC=TEST/CN=GENERATED TEST CERTIFICATE"} (\d+).0
+    verify_metadata_certificate_expiry{entity_id="foo",use="encryption",serial="3",subject="/DC=org/DC=TEST/CN=GENERATED TEST CERTIFICATE"} (\d+).0
+    verify_metadata_certificate_expiry{entity_id="bar",use="encryption",serial="4",subject="/DC=org/DC=TEST/CN=GENERATED TEST CERTIFICATE"} (\d+).0
+    verify_metadata_certificate_expiry{entity_id="metadata_signing_certificate",use="",serial="2",subject="/DC=org/DC=TEST/CN=SIGNED TEST CERTIFICATE"} (\d+).0
     """
     And the metrics on port 2040 should contain exactly:
     """
-verify_metadata_expiry{metadata="http://localhost:53110"} 1434720100000.0
+    verify_metadata_expiry{metadata="http://localhost:53110"} 1434720100000.0
     """
     And the metrics on port 2040 should contain exactly:
     """
-verify_metadata_certificate_ocsp_success{entity_id="foo",use="encryption",serial="2",subject="/DC=org/DC=TEST/CN=GENERATED TEST CERTIFICATE"} 1.0
-verify_metadata_certificate_ocsp_success{entity_id="foo",use="encryption",serial="3",subject="/DC=org/DC=TEST/CN=GENERATED TEST CERTIFICATE"} 1.0
-verify_metadata_certificate_ocsp_success{entity_id="bar",use="encryption",serial="4",subject="/DC=org/DC=TEST/CN=GENERATED TEST CERTIFICATE"} 1.0
-verify_metadata_certificate_ocsp_success{entity_id="metadata_signing_certificate",use="",serial="2",subject="/DC=org/DC=TEST/CN=SIGNED TEST CERTIFICATE"} 1.0
+    verify_metadata_certificate_ocsp_success{entity_id="foo",use="encryption",serial="2",subject="/DC=org/DC=TEST/CN=GENERATED TEST CERTIFICATE"} 1.0
+    verify_metadata_certificate_ocsp_success{entity_id="foo",use="encryption",serial="3",subject="/DC=org/DC=TEST/CN=GENERATED TEST CERTIFICATE"} 1.0
+    verify_metadata_certificate_ocsp_success{entity_id="bar",use="encryption",serial="4",subject="/DC=org/DC=TEST/CN=GENERATED TEST CERTIFICATE"} 1.0
+    verify_metadata_certificate_ocsp_success{entity_id="metadata_signing_certificate",use="",serial="2",subject="/DC=org/DC=TEST/CN=SIGNED TEST CERTIFICATE"} 1.0
     """
 
   Scenario: Check metadata that contains a revoked cert
@@ -56,20 +56,20 @@ verify_metadata_certificate_ocsp_success{entity_id="metadata_signing_certificate
     When I start the prometheus client on port 2041 with metadata on port 53111 with ca test_pki_one.crt
     Then the metrics on port 2041 should contain exactly:
     """
-verify_metadata_certificate_expiry{entity_id="foo",use="encryption",serial="2",subject="/DC=org/DC=TEST/CN=GENERATED TEST CERTIFICATE"} (\d+).0
-verify_metadata_certificate_expiry{entity_id="foo",use="encryption",serial="3",subject="/DC=org/DC=TEST/CN=GENERATED TEST CERTIFICATE"} (\d+).0
-verify_metadata_certificate_expiry{entity_id="bar",use="encryption",serial="4",subject="/DC=org/DC=TEST/CN=GENERATED TEST CERTIFICATE"} (\d+).0
-verify_metadata_certificate_expiry{entity_id="metadata_signing_certificate",use="",serial="2",subject="/DC=org/DC=TEST/CN=SIGNED TEST CERTIFICATE"} (\d+).0
+    verify_metadata_certificate_expiry{entity_id="foo",use="encryption",serial="2",subject="/DC=org/DC=TEST/CN=GENERATED TEST CERTIFICATE"} (\d+).0
+    verify_metadata_certificate_expiry{entity_id="foo",use="encryption",serial="3",subject="/DC=org/DC=TEST/CN=GENERATED TEST CERTIFICATE"} (\d+).0
+    verify_metadata_certificate_expiry{entity_id="bar",use="encryption",serial="4",subject="/DC=org/DC=TEST/CN=GENERATED TEST CERTIFICATE"} (\d+).0
+    verify_metadata_certificate_expiry{entity_id="metadata_signing_certificate",use="",serial="2",subject="/DC=org/DC=TEST/CN=SIGNED TEST CERTIFICATE"} (\d+).0
     """
     And the metrics on port 2041 should contain exactly:
     """
-verify_metadata_expiry{metadata="http://localhost:53111"} 1434720100000.0
+    verify_metadata_expiry{metadata="http://localhost:53111"} 1434720100000.0
     """
     And the metrics on port 2041 should contain exactly:
     """
-verify_metadata_certificate_ocsp_success{entity_id="foo",use="encryption",serial="2",subject="/DC=org/DC=TEST/CN=GENERATED TEST CERTIFICATE"} 1.0
-verify_metadata_certificate_ocsp_success{entity_id="foo",use="encryption",serial="3",subject="/DC=org/DC=TEST/CN=GENERATED TEST CERTIFICATE"} 1.0
-verify_metadata_certificate_ocsp_success{entity_id="bar",use="encryption",serial="4",subject="/DC=org/DC=TEST/CN=GENERATED TEST CERTIFICATE"} 0.0
-verify_metadata_certificate_ocsp_success{entity_id="metadata_signing_certificate",use="",serial="2",subject="/DC=org/DC=TEST/CN=SIGNED TEST CERTIFICATE"} 1.0
+    verify_metadata_certificate_ocsp_success{entity_id="foo",use="encryption",serial="2",subject="/DC=org/DC=TEST/CN=GENERATED TEST CERTIFICATE"} 1.0
+    verify_metadata_certificate_ocsp_success{entity_id="foo",use="encryption",serial="3",subject="/DC=org/DC=TEST/CN=GENERATED TEST CERTIFICATE"} 1.0
+    verify_metadata_certificate_ocsp_success{entity_id="bar",use="encryption",serial="4",subject="/DC=org/DC=TEST/CN=GENERATED TEST CERTIFICATE"} 0.0
+    verify_metadata_certificate_ocsp_success{entity_id="metadata_signing_certificate",use="",serial="2",subject="/DC=org/DC=TEST/CN=SIGNED TEST CERTIFICATE"} 1.0
     """
 

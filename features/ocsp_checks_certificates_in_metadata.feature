@@ -21,9 +21,9 @@ Feature: OCSP checks certificates in metadata
     When I start the metadata checker with the arguments "-m http://localhost:53000 --cas tmp/aruba/ -p 2020"
     Then the metrics on port 2020 should contain exactly:
     """
-verify_metadata_certificate_ocsp_success{entity_id="foo",use="encryption",serial="2",subject="/DC=org/DC=TEST/CN=GENERATED TEST CERTIFICATE"} 1.0
-verify_metadata_certificate_ocsp_success{entity_id="foo",use="encryption",serial="3",subject="/DC=org/DC=TEST/CN=GENERATED TEST CERTIFICATE"} 1.0
-verify_metadata_certificate_ocsp_success{entity_id="bar",use="encryption",serial="4",subject="/DC=org/DC=TEST/CN=GENERATED TEST CERTIFICATE"} 1.0
+    verify_metadata_certificate_ocsp_success{entity_id="foo",use="encryption",serial="2",subject="/DC=org/DC=TEST/CN=GENERATED TEST CERTIFICATE"} 1.0
+    verify_metadata_certificate_ocsp_success{entity_id="foo",use="encryption",serial="3",subject="/DC=org/DC=TEST/CN=GENERATED TEST CERTIFICATE"} 1.0
+    verify_metadata_certificate_ocsp_success{entity_id="bar",use="encryption",serial="4",subject="/DC=org/DC=TEST/CN=GENERATED TEST CERTIFICATE"} 1.0
     """
 
   Scenario: Check unhealthy metadata
@@ -40,9 +40,9 @@ verify_metadata_certificate_ocsp_success{entity_id="bar",use="encryption",serial
     When I start the metadata checker with the arguments "-m http://localhost:53001 --cas tmp/aruba/ -p 2021"
     Then the metrics on port 2021 should contain exactly:
     """
-verify_metadata_certificate_ocsp_success{entity_id="foo",use="encryption",serial="2",subject="/DC=org/DC=TEST/CN=GENERATED TEST CERTIFICATE"} 1.0
-verify_metadata_certificate_ocsp_success{entity_id="foo",use="encryption",serial="3",subject="/DC=org/DC=TEST/CN=GENERATED TEST CERTIFICATE"} 1.0
-verify_metadata_certificate_ocsp_success{entity_id="bar",use="encryption",serial="4",subject="/DC=org/DC=TEST/CN=GENERATED TEST CERTIFICATE"} 0.0
+    verify_metadata_certificate_ocsp_success{entity_id="foo",use="encryption",serial="2",subject="/DC=org/DC=TEST/CN=GENERATED TEST CERTIFICATE"} 1.0
+    verify_metadata_certificate_ocsp_success{entity_id="foo",use="encryption",serial="3",subject="/DC=org/DC=TEST/CN=GENERATED TEST CERTIFICATE"} 1.0
+    verify_metadata_certificate_ocsp_success{entity_id="bar",use="encryption",serial="4",subject="/DC=org/DC=TEST/CN=GENERATED TEST CERTIFICATE"} 0.0
     """
 
   Scenario: Check metadata with more than one PKI
@@ -60,9 +60,9 @@ verify_metadata_certificate_ocsp_success{entity_id="bar",use="encryption",serial
     When I start the metadata checker with the arguments "-m http://localhost:53002 --cas tmp/aruba/ -p 2022"
     Then the metrics on port 2022 should contain exactly:
     """
-verify_metadata_certificate_ocsp_success{entity_id="foo",use="encryption",serial="2",subject="/DC=org/DC=TEST/CN=GENERATED TEST CERTIFICATE"} 1.0
-verify_metadata_certificate_ocsp_success{entity_id="foo",use="encryption",serial="3",subject="/DC=org/DC=TEST/CN=GENERATED TEST CERTIFICATE"} 1.0
-verify_metadata_certificate_ocsp_success{entity_id="bar",use="encryption",serial="2",subject="/DC=org/DC=TEST/CN=GENERATED TEST CERTIFICATE"} 1.0
+    verify_metadata_certificate_ocsp_success{entity_id="foo",use="encryption",serial="2",subject="/DC=org/DC=TEST/CN=GENERATED TEST CERTIFICATE"} 1.0
+    verify_metadata_certificate_ocsp_success{entity_id="foo",use="encryption",serial="3",subject="/DC=org/DC=TEST/CN=GENERATED TEST CERTIFICATE"} 1.0
+    verify_metadata_certificate_ocsp_success{entity_id="bar",use="encryption",serial="2",subject="/DC=org/DC=TEST/CN=GENERATED TEST CERTIFICATE"} 1.0
     """
 
   Scenario: Checks signed metadata
@@ -79,8 +79,8 @@ verify_metadata_certificate_ocsp_success{entity_id="bar",use="encryption",serial
     When I start the metadata checker with the arguments "-m http://localhost:53003 --cas tmp/aruba/ -p 2023"
     Then the metrics on port 2023 should contain exactly:
     """
-verify_metadata_certificate_ocsp_success{entity_id="foo",use="encryption",serial="2",subject="/DC=org/DC=TEST/CN=GENERATED TEST CERTIFICATE"} 1.0
-verify_metadata_certificate_ocsp_success{entity_id="metadata_signing_certificate",use="",serial="2",subject="/DC=org/DC=TEST/CN=SIGNED TEST CERTIFICATE"} 1.0
+    verify_metadata_certificate_ocsp_success{entity_id="foo",use="encryption",serial="2",subject="/DC=org/DC=TEST/CN=GENERATED TEST CERTIFICATE"} 1.0
+    verify_metadata_certificate_ocsp_success{entity_id="metadata_signing_certificate",use="",serial="2",subject="/DC=org/DC=TEST/CN=SIGNED TEST CERTIFICATE"} 1.0
     """
 
   Scenario: Checks signed metadata with revoked signing certificate
@@ -97,6 +97,6 @@ verify_metadata_certificate_ocsp_success{entity_id="metadata_signing_certificate
     When I start the metadata checker with the arguments "-m http://localhost:53004 --cas tmp/aruba/ -p 2024"
     Then the metrics on port 2024 should contain exactly:
     """
-verify_metadata_certificate_ocsp_success{entity_id="foo",use="encryption",serial="2",subject="/DC=org/DC=TEST/CN=GENERATED TEST CERTIFICATE"} 1.0
-verify_metadata_certificate_ocsp_success{entity_id="metadata_signing_certificate",use="",serial="2",subject="/DC=org/DC=TEST/CN=SIGNED TEST CERTIFICATE"} 0.0
+    verify_metadata_certificate_ocsp_success{entity_id="foo",use="encryption",serial="2",subject="/DC=org/DC=TEST/CN=GENERATED TEST CERTIFICATE"} 1.0
+    verify_metadata_certificate_ocsp_success{entity_id="metadata_signing_certificate",use="",serial="2",subject="/DC=org/DC=TEST/CN=SIGNED TEST CERTIFICATE"} 0.0
     """
