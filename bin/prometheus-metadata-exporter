@@ -113,16 +113,23 @@ class OcspCheckMetric < Prometheus::Client::Gauge
   private
 
   def check_and_set(gauge, certificate_identities, ca_files)
+      return if certificate_identities.nil?
+
       pems = certificate_identities.keys
       ocsp_results = @pem_checker.check_pems(pems, ca_files)
       certificate_identities.map do |pem, identities|
         identities.map do |identity|
           cert = @certificate_factory.from_inline_pem(pem)
-          gauge.set({    entity_id: identity.entity_id,
-                         use: identity.key_use,
-                         serial: cert.serial,
-                         subject: cert.subject,
-                    }, ocsp_results[pem].revoked? ? 0 : 1)
+
+          ocsp_result = ocsp_results[pem].revoked? ? 0 : 1
+
+          unless ocsp_results[pem].unknown?
+            gauge.set({    entity_id: identity.entity_id,
+                           use: identity.key_use,
+                           serial: cert.serial,
+                           subject: cert.subject,
+                      }, ocsp_result)
+          end
         end
       end
   end
@@ -138,6 +145,7 @@ class PrometheusMetadataExporter
   def gogogo
     dir = config[:ca_file_list]
     ca_file_list = Dir.children(dir).collect{|name| File.join(dir,name)}
+
     Prometheus::Client::registry.register(ExpiryDateMetric.new(config[:metadata_url]))
     Prometheus::Client::registry.register(ValidUntilMetric.new(config[:metadata_url]))
     Prometheus::Client::registry.register(OcspCheckMetric.new(config[:metadata_url], ca_file_list))
@@ -154,7 +162,7 @@ class App < Sinatra::Base
   set :bind, '0.0.0.0'
 
   exporter.gogogo
-  run! if app_file == $0
+  run!
 end
 
 

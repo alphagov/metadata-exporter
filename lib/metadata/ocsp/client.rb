@@ -16,13 +16,23 @@ module Metadata
           hash
         }
         ocsp_uri = find_ocsp_uri(certificates.first)
-        ocsp_request = build_ocsp_request_body(cert_ids.values)
-        ocsp_response = make_ocsp_request(ocsp_uri, ocsp_request)
-        cert_id_statuses = check_response(ocsp_request, ocsp_response, cert_ids.values, store)
-        certificates.inject({}) { |hash, certificate|
-          hash[certificate] = cert_id_statuses[cert_ids[certificate]]
-          hash
-        }
+        if ocsp_uri.nil?
+          certificates.inject({}) { |hash, certificate|
+            hash[certificate] = Result.new(
+                REVOCATION_STATUS.fetch(2),
+                CRLREASON[0]
+            )
+            hash
+          }
+        else
+          ocsp_request = build_ocsp_request_body(cert_ids.values)
+          ocsp_response = make_ocsp_request(ocsp_uri, ocsp_request)
+          cert_id_statuses = check_response(ocsp_request, ocsp_response, cert_ids.values, store)
+          certificates.inject({}) { |hash, certificate|
+            hash[certificate] = cert_id_statuses[cert_ids[certificate]]
+            hash
+          }
+        end
       end
 
       private
@@ -31,7 +41,10 @@ module Metadata
           extension.oid == 'authorityInfoAccess'
         end
 
-        raise "The certificate #{certificate.subject.to_s} does not contain an 'authorityInfoAccess' extension" if authority_info_access.nil?
+        if authority_info_access.nil?
+          warn("The certificate #{certificate.subject.to_s} does not contain an 'authorityInfoAccess' extension")
+          return nil
+        end
 
         descriptions = authority_info_access.value.split "\n"
         ocsp = descriptions.find do |description|

@@ -1,6 +1,6 @@
 Feature: OCSP checks certificates in metadata
 
-  In order to gurantee the health of the federation,
+  In order to guarantee the health of the federation,
   As a service manager,
   I want to be alerted if our metadata contains revoked certificates
 
@@ -16,13 +16,14 @@ Feature: OCSP checks certificates in metadata
       | foo       | foo_key_1 | TEST_PKI_ONE | good   |
       | foo       | foo_key_2 | TEST_PKI_ONE | good   |
       | bar       | bar_key_1 | TEST_PKI_ONE | good   |
-    And there is metadata at http://localhost:53001
+    And there is metadata at http://localhost:53000
     And there is an OCSP responder
-    When I successfully run `sensu-metadata-ocsp-check -h http://localhost:53001 --cas test_pki_one.crt`
-    Then the output should contain:
+    When I start the metadata checker with the arguments "-m http://localhost:53000 --cas tmp/aruba/ -p 2020"
+    Then the metrics on port 2020 should contain exactly:
     """
-    metadata_ocsp_check OK: no revoked certificates
-
+    verify_metadata_certificate_ocsp_success{entity_id="foo",use="encryption",serial="2",subject="/DC=org/DC=TEST/CN=GENERATED TEST CERTIFICATE"} 1.0
+    verify_metadata_certificate_ocsp_success{entity_id="foo",use="encryption",serial="3",subject="/DC=org/DC=TEST/CN=GENERATED TEST CERTIFICATE"} 1.0
+    verify_metadata_certificate_ocsp_success{entity_id="bar",use="encryption",serial="4",subject="/DC=org/DC=TEST/CN=GENERATED TEST CERTIFICATE"} 1.0
     """
 
   Scenario: Check unhealthy metadata
@@ -34,14 +35,14 @@ Feature: OCSP checks certificates in metadata
       | foo       | foo_key_1 | TEST_PKI_ONE | good    |
       | foo       | foo_key_2 | TEST_PKI_ONE | good    |
       | bar       | bar_key_1 | TEST_PKI_ONE | revoked |
-    Given there is metadata at http://localhost:53000
+    Given there is metadata at http://localhost:53001
     And there is an OCSP responder
-    When I run `sensu-metadata-ocsp-check -h http://localhost:53000 --cas test_pki_one.crt`
-    Then the exit status should be 2
-    Then the output should contain:
+    When I start the metadata checker with the arguments "-m http://localhost:53001 --cas tmp/aruba/ -p 2021"
+    Then the metrics on port 2021 should contain exactly:
     """
-    metadata_ocsp_check CRITICAL: The certificate named bar_key_1 for the entity 'bar' has an OCSP status of revoked
-
+    verify_metadata_certificate_ocsp_success{entity_id="foo",use="encryption",serial="2",subject="/DC=org/DC=TEST/CN=GENERATED TEST CERTIFICATE"} 1.0
+    verify_metadata_certificate_ocsp_success{entity_id="foo",use="encryption",serial="3",subject="/DC=org/DC=TEST/CN=GENERATED TEST CERTIFICATE"} 1.0
+    verify_metadata_certificate_ocsp_success{entity_id="bar",use="encryption",serial="4",subject="/DC=org/DC=TEST/CN=GENERATED TEST CERTIFICATE"} 0.0
     """
 
   Scenario: Check metadata with more than one PKI
@@ -56,11 +57,12 @@ Feature: OCSP checks certificates in metadata
       | bar       | bar_key_1 | TEST_PKI_TWO | good   |
     And there is metadata at http://localhost:53002
     And there is an OCSP responder
-    When I successfully run `sensu-metadata-ocsp-check -h http://localhost:53002 --cas test_pki_one.crt,test_pki_two.crt`
-    Then the output should contain:
+    When I start the metadata checker with the arguments "-m http://localhost:53002 --cas tmp/aruba/ -p 2022"
+    Then the metrics on port 2022 should contain exactly:
     """
-    metadata_ocsp_check OK: no revoked certificates
-
+    verify_metadata_certificate_ocsp_success{entity_id="foo",use="encryption",serial="2",subject="/DC=org/DC=TEST/CN=GENERATED TEST CERTIFICATE"} 1.0
+    verify_metadata_certificate_ocsp_success{entity_id="foo",use="encryption",serial="3",subject="/DC=org/DC=TEST/CN=GENERATED TEST CERTIFICATE"} 1.0
+    verify_metadata_certificate_ocsp_success{entity_id="bar",use="encryption",serial="2",subject="/DC=org/DC=TEST/CN=GENERATED TEST CERTIFICATE"} 1.0
     """
 
   Scenario: Checks signed metadata
@@ -74,11 +76,11 @@ Feature: OCSP checks certificates in metadata
     And the metadata is signed by a certificate belonging to SIGNING_PKI_ONE
     And there is metadata at http://localhost:53003
     And there is an OCSP responder
-    When I successfully run `sensu-metadata-ocsp-check -h http://localhost:53003 --cas test_pki_one.crt --signing_cas signing_pki_one.crt`
-    Then the output should contain:
+    When I start the metadata checker with the arguments "-m http://localhost:53003 --cas tmp/aruba/ -p 2023"
+    Then the metrics on port 2023 should contain exactly:
     """
-    metadata_ocsp_check OK: no revoked certificates
-
+    verify_metadata_certificate_ocsp_success{entity_id="foo",use="encryption",serial="2",subject="/DC=org/DC=TEST/CN=GENERATED TEST CERTIFICATE"} 1.0
+    verify_metadata_certificate_ocsp_success{entity_id="metadata_signing_certificate",use="",serial="2",subject="/DC=org/DC=TEST/CN=SIGNED TEST CERTIFICATE"} 1.0
     """
 
   Scenario: Checks signed metadata with revoked signing certificate
@@ -92,10 +94,9 @@ Feature: OCSP checks certificates in metadata
     And the metadata is signed by a revoked certificate belonging to SIGNING_PKI_ONE
     And there is metadata at http://localhost:53004
     And there is an OCSP responder
-    When I run `sensu-metadata-ocsp-check -h http://localhost:53004 --cas test_pki_one.crt --signing_cas signing_pki_one.crt`
-    Then the exit status should be 2
-    Then the output should contain:
+    When I start the metadata checker with the arguments "-m http://localhost:53004 --cas tmp/aruba/ -p 2024"
+    Then the metrics on port 2024 should contain exactly:
     """
-    metadata_ocsp_check CRITICAL: The certificate named certificate for the entity 'metadata_signature' has an OCSP status of revoked
-
+    verify_metadata_certificate_ocsp_success{entity_id="foo",use="encryption",serial="2",subject="/DC=org/DC=TEST/CN=GENERATED TEST CERTIFICATE"} 1.0
+    verify_metadata_certificate_ocsp_success{entity_id="metadata_signing_certificate",use="",serial="2",subject="/DC=org/DC=TEST/CN=SIGNED TEST CERTIFICATE"} 0.0
     """

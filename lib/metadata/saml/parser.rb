@@ -25,8 +25,13 @@ module Metadata
       end
 
       def signing_certificate(document)
-        pem = document.xpath(".//ds:Signature/ds:KeyInfo/ds:X509Data/ds:X509Certificate", "ds" => "http://www.w3.org/2000/09/xmldsig#").first.content
-        { pem => [ Entity.new("metadata_signing_certificate") ] }
+        xml_node = document.xpath(".//ds:Signature/ds:KeyInfo/ds:X509Data/ds:X509Certificate", "ds" => "http://www.w3.org/2000/09/xmldsig#")
+
+        unless xml_node.nil? or xml_node.length == 0
+          pem = xml_node.first.content
+          return { pem => [ Entity.new("metadata_signing_certificate") ] }
+        end
+        nil
       end
 
     def valid_until(document)

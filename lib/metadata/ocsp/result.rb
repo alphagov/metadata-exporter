@@ -12,6 +12,10 @@ module Metadata
         @status == :revoked
       end
 
+      def unknown?
+        @status == :unknown
+      end
+
       def to_s
         @status.to_s
       end

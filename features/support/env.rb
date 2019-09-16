@@ -11,6 +11,8 @@ require 'metadata_server'
 require 'ocsp_responder'
 World(MetadataHelper)
 
+STDOUT.sync = true
+
 Before do
   if @metadata_server
     @metadata_server.shutdown

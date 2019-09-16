@@ -17,30 +17,13 @@ Feature: expiry of certificates in metadata is checked
       | foo       | foo_key_2 | TEST_PKI_ONE | good   |
       | bar       | bar_key_1 | TEST_PKI_ONE | good   |
     And there is metadata at http://localhost:53010
-    When I successfully run `sensu-metadata-expiry-check -h http://localhost:53010 -w 28 -c 14`
-    Then the output should contain:
-    """
-    metadata_expiry_check OK: no certificates near expiry
-
-    """
-
-  Scenario: Check metadata with certificate close to expiry
-    Given there are the following PKIs:
-      | name         | cert_filename    |
-      | TEST_PKI_ONE | test_pki_one.crt |
-    Given the following certificates are defined in metadata:
-      | entity_id | key_name  | pki          | status  |
-      | foo       | foo_key_1 | TEST_PKI_ONE | good    |
-      | foo       | foo_key_2 | TEST_PKI_ONE | good    |
-      | bar       | bar_key_1 | TEST_PKI_ONE | near_expiry |
-    Given there is metadata at http://localhost:53011
-    When I run `sensu-metadata-expiry-check -h http://localhost:53011 -w 28 -c 14`
-    Then the exit status should be 1
-    Then the output should match:
-    """
-    metadata_expiry_check WARNING: The certificate named bar_key_1 for the entity 'bar' has a status of NEAR EXPIRY (.*)
-
-    """
+    And there is an OCSP responder
+    When I start the metadata checker with the arguments "-m http://localhost:53010 --cas tmp/aruba/ -p 2030"
+    Then the metrics on port 2030 should contain certificate expires exactly:
+      | entity_id | serial | subject                                       | status |
+      | foo       | 2      | /DC=org/DC=TEST/CN=GENERATED TEST CERTIFICATE | good   |
+      | foo       | 3      | /DC=org/DC=TEST/CN=GENERATED TEST CERTIFICATE | good   |
+      | bar       | 4      | /DC=org/DC=TEST/CN=GENERATED TEST CERTIFICATE | good   |
 
   Scenario: Check metadata with expired certificate
     Given there are the following PKIs:
@@ -50,47 +33,13 @@ Feature: expiry of certificates in metadata is checked
       | entity_id | key_name  | pki          | status  |
       | foo       | foo_key_1 | TEST_PKI_ONE | good    |
       | foo       | foo_key_2 | TEST_PKI_ONE | good    |
-      | bar       | bar_key_1 | TEST_PKI_ONE | almost_expired |
-    Given there is metadata at http://localhost:53012
-    When I run `sensu-metadata-expiry-check -h http://localhost:53012 -w 28 -c 14`
-    Then the exit status should be 2
-    Then the output should match:
-    """
-    metadata_expiry_check CRITICAL: The certificate named bar_key_1 for the entity 'bar' has a status of ALMOST EXPIRED (.*)
+      | bar       | bar_key_1 | TEST_PKI_ONE | expired |
+    Given there is metadata at http://localhost:53013
+    And there is an OCSP responder
+    When I start the metadata checker with the arguments "-m http://localhost:53013 --cas tmp/aruba/ -p 2033"
+    Then the metrics on port 2033 should contain certificate expires exactly:
+      | entity_id | serial | subject                                       | status  |
+      | foo       | 2      | /DC=org/DC=TEST/CN=GENERATED TEST CERTIFICATE | good    |
+      | foo       | 3      | /DC=org/DC=TEST/CN=GENERATED TEST CERTIFICATE | good    |
+      | bar       | 4      | /DC=org/DC=TEST/CN=EXPIRED CERT               | expired |
 
-    """
-  Scenario: Check metadata with expired certificate
-      Given there are the following PKIs:
-        | name         | cert_filename    |
-        | TEST_PKI_ONE | test_pki_one.crt |
-      Given the following certificates are defined in metadata:
-        | entity_id | key_name  | pki          | status  |
-        | foo       | foo_key_1 | TEST_PKI_ONE | good    |
-        | foo       | foo_key_2 | TEST_PKI_ONE | good    |
-        | bar       | bar_key_1 | TEST_PKI_ONE | expired |
-      Given there is metadata at http://localhost:53013
-      When I run `sensu-metadata-expiry-check -h http://localhost:53013 -w 28 -c 14`
-      Then the exit status should be 2
-      Then the output should match:
-      """
-      metadata_expiry_check CRITICAL: The certificate named bar_key_1 for the entity 'bar' has a status of EXPIRED (.*)
-
-      """
-  Scenario: Check metadata with expired certificate and certificate close to expiry
-      Given there are the following PKIs:
-        | name         | cert_filename    |
-        | TEST_PKI_ONE | test_pki_one.crt |
-      Given the following certificates are defined in metadata:
-        | entity_id | key_name  | pki          | status  |
-        | foo       | foo_key_1 | TEST_PKI_ONE | good    |
-        | foo       | foo_key_2 | TEST_PKI_ONE | near_expiry |
-        | bar       | bar_key_1 | TEST_PKI_ONE | expired |
-      Given there is metadata at http://localhost:53014
-        When I run `sensu-metadata-expiry-check -h http://localhost:53014 -w 28 -c 14`
-        Then the exit status should be 2
-        Then the output should match:
-        """
-        metadata_expiry_check CRITICAL: The certificate named bar_key_1 for the entity 'bar' has a status of EXPIRED (.*)
-        The certificate named foo_key_2 for the entity 'foo' has a status of NEAR EXPIRY (.*)
-        
-        """
