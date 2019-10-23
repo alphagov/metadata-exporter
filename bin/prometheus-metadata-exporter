@@ -105,7 +105,7 @@ class OcspCheckMetric < Prometheus::Client::Gauge
     check_and_set(gauge, @parser.certificate_identities(document), @ca_files, @allow_self_signed)
 
     # this is the cert used to sign the metadata document itself
-    check_and_set(gauge, @parser.signing_certificate(document), @ca_files, @allow_self_signed)
+    check_and_set(gauge, @parser.signing_certificate(document), @ca_files)
 
     # return the metrics to prometheus
     return gauge.values
@@ -113,7 +113,7 @@ class OcspCheckMetric < Prometheus::Client::Gauge
 
   private
 
-  def check_and_set(gauge, certificate_identities, ca_files, allow_self_signed)
+  def check_and_set(gauge, certificate_identities, ca_files, allow_self_signed = false)
       return if certificate_identities.nil?
 
       pems = certificate_identities.keys

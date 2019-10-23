@@ -20,7 +20,7 @@ Then upload the image to the desired repository.
 
 To run the prometheus exporter:
 
-    bundle exec bin/prometheus-metadata-exporter -m METADATA_URL --cas DIRECTORY_OF_CA_CERTIFICATE_FILES [--allow_self-signed]
+    bundle exec bin/prometheus-metadata-exporter -m METADATA_URL --cas DIRECTORY_OF_CA_CERTIFICATE_FILES [--allow_self_signed]
     
 The directory of DIRECTORY_OF_CA_CERTS should contain the certificate chains for the metadata signing cert as well as any signing and encryption certs within the SAML.
 
