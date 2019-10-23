@@ -7,7 +7,6 @@ Feature: OCSP checks certificates in metadata
   Background:
     Given the OCSP port is 54000
 
-  @selfsign
   Scenario: Check healthy metadata
     Given there are the following PKIs:
       | name         | cert_filename    |

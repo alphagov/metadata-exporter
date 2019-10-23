@@ -39,7 +39,6 @@ Given(/^the following certificates are defined in metadata:$/) do |table|
     when "expired"
       cert = pki.generate_cert_with_expiry(Time.now-(60*60*24*15), "EXPIRED CERT")
     when "selfsigned"
-      puts "selfsigned cert requested"
       pair = pki.generate_cert_and_key(Time.now+(60*60*24*365), "SELF_SIGNED_CERT")
       cert = pair[0]
       key = pair[1]

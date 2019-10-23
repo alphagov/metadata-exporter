@@ -38,7 +38,6 @@ class PKI
 
   def sign(cert, key = nil)
     selfsign = !key.nil?
-    puts "selfsign in progress" if selfsign
     cert.issuer = selfsign ? cert.subject : @root_ca.subject
     cert.serial = take_next_serial
     ef = OpenSSL::X509::ExtensionFactory.new
