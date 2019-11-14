@@ -160,6 +160,7 @@ class App < Sinatra::Base
 
   set :port, exporter.config[:port]
   set :bind, '0.0.0.0'
+  set :show_exceptions, false
 
   exporter.gogogo
   run!
