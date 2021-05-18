@@ -1,4 +1,5 @@
-FROM ruby:2.5.3
+ARG base_image=ruby:2.5.3
+FROM ${base_image}
 
 EXPOSE 9199
 
