@@ -1,5 +1,7 @@
 source 'https://rubygems.org'
 
+gem 'octokit', '4.21.0'
+
 # Specify your gem's dependencies in metadata-ocsp-checker.gemspec
 gemspec
 
