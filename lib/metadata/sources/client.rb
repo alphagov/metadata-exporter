@@ -8,19 +8,29 @@ module Metadata
   module Sources
 
     METADATA_REPO = "alphagov/verify-metadata"
+    CACHE_VALID_DURATION = 300 # 5 minutes
 
     class Client
 
       def initialize(access_token, env)
         @octokit = Octokit::Client.new(access_token: access_token)
         @env = env
+        @last_fetch_timestamp = nil
       end
 
       def get
-        [hub_certs, idp_certs].flatten
+        if cached_value_too_old?
+          @certificates = [hub_certs, idp_certs].flatten
+          @last_fetch_timestamp = Time.now
+        end
+        @certificates
       end
 
       private
+
+      def cached_value_too_old?
+        @last_fetch_timestamp.nil? or (Time.now > @last_fetch_timestamp + CACHE_VALID_DURATION)
+      end
 
       def hub_certs
         hub_yaml_content = get_yaml_content("sources/#{@env}/hub.yml")

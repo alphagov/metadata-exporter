@@ -1,9 +1,9 @@
-Feature: expiry of certificates in metadata is checked
+Feature: source certs are checked against published certs
 
   Background:
     Given the OCSP port is 54000
 
-  Scenario: Check healthy metadata
+  Scenario: Certs don't match
     Given there are the following PKIs:
       | name         | cert_filename    |
       | TEST_PKI_ONE | test_pki_one.crt |
