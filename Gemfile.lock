@@ -53,6 +53,8 @@ GEM
     diff-lcs (1.3)
     faraday (0.15.3)
       multipart-post (>= 1.2, < 3)
+    faraday-http-cache (2.2.0)
+      faraday (>= 0.8)
     ffi (1.10.0)
     gherkin (2.12.2)
       multi_json (~> 1.3)
@@ -117,6 +119,7 @@ DEPENDENCIES
   ci_reporter_cucumber
   ci_reporter_rspec
   cucumber (~> 1.3.20)
+  faraday-http-cache (= 2.2.0)
   metadata-checker!
   octokit (= 4.21.0)
   r509-ocsp-responder!

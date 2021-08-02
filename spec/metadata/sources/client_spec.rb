@@ -11,7 +11,7 @@ describe "Client" do
     it "should return all hub and idp certs in a list" do
       expect(Octokit::Client)
               .to receive(:new)
-              .with(access_token: "my_access_token")
+              .with(access_token: "my_access_token", middleware: instance_of(Faraday::RackBuilder))
               .and_return(octokit_double)
 
       allow(octokit_double)

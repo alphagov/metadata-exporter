@@ -47,7 +47,7 @@ module Metadata
           './/md:EntityDescriptor//ds:X509Certificate',
           md: "urn:oasis:names:tc:SAML:2.0:metadata",
           ds: "http://www.w3.org/2000/09/xmldsig#"
-        ).map { |element| element.text }
+        ).map { |element| element.text.gsub("\n", '') }
       end
     end
   end

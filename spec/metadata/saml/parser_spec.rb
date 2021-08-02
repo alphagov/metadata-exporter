@@ -98,6 +98,18 @@ module Metadata
           certs = Parser.new.all_entity_certificates(doc)
           expect(certs).to eq([foo_cert_1, foo_cert_2, bar_cert_1])
         end
+
+        it 'removes newlines from certificates' do
+          metadata_entries = {
+            "foo_id" => [{:key_name => "foo_1", :cert_value => "A\nCERT\nWITH\nA\nBUNCH\nOF\nNEWLINES\n"}]
+          }
+
+          metadata = build_metadata(metadata_entries)
+          doc = Nokogiri::XML(metadata)
+
+          certs = Parser.new.all_entity_certificates(doc)
+          expect(certs).to eq(["ACERTWITHABUNCHOFNEWLINES"])
+        end
       end
     end
   end

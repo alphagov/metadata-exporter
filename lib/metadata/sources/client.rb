@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'base64'
+require "faraday-http-cache"
 require 'octokit'
 require 'yaml'
 
@@ -12,7 +13,7 @@ module Metadata
     class Client
 
       def initialize(access_token, env)
-        @octokit = Octokit::Client.new(access_token: access_token)
+        @octokit = Octokit::Client.new(access_token: access_token, middleware: build_faraday_http_cache)
         @env = env
       end
 
@@ -71,6 +72,14 @@ module Metadata
 
       def extract_encryption_cert(content)
         content["encryption_certificate"]["x509"].gsub("\n", '')
+      end
+
+      def build_faraday_http_cache
+        Faraday::RackBuilder.new do |builder|
+          builder.use Faraday::HttpCache, serializer: Marshal, shared_cache: false
+          builder.use Octokit::Response::RaiseError
+          builder.adapter Faraday.default_adapter
+        end
       end
     end
   end
