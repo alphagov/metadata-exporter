@@ -121,19 +121,25 @@ class OcspCheckMetric < Prometheus::Client::Gauge
     return if certificate_identities.nil?
 
     pems = certificate_identities.keys
-    ocsp_results = @pem_checker.check_pems(pems, ca_files)
-    certificate_identities.map do |pem, identities|
-      identities.map do |identity|
-        cert = @certificate_factory.from_inline_pem(pem)
+    begin
+      ocsp_results = @pem_checker.check_pems(pems, ca_files)
+    rescue Metadata::Ocsp::CheckerError => error
+      puts error.message
+      return
+    else
+      certificate_identities.map do |pem, identities|
+        identities.map do |identity|
+          cert = @certificate_factory.from_inline_pem(pem)
 
-        ocsp_result = ocsp_results[pem].revoked? ? 0 : 1
+          ocsp_result = ocsp_results[pem].revoked? ? 0 : 1
 
-        unless ocsp_results[pem].unknown?
-          gauge.set({ entity_id: identity.entity_id,
-                      use: identity.key_use,
-                      serial: cert.serial,
-                      subject: cert.subject,
-                    }, ocsp_result)
+          unless ocsp_results[pem].unknown?
+            gauge.set({ entity_id: identity.entity_id,
+                        use: identity.key_use,
+                        serial: cert.serial,
+                        subject: cert.subject,
+                      }, ocsp_result)
+          end
         end
       end
     end
