@@ -1,5 +1,9 @@
 # Metadata Exporter
 
+>**GOV.UK Verify has closed**
+>
+>This repository is out of date and has been archived
+
 A prometheus exporter that exports metrics about SAML metadata.
 
 ## Installation
